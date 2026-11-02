@@ -97,7 +97,7 @@ Working in IT operations with responsibilities involving:
 
 ## Featured Projects
 
-A selection of projects covering different areas of software development and applied machine learning.
+A selection of projects covering different areas of software development, artificial intelligence, and applied machine learning.
 
 <table>
   <tr>
@@ -148,23 +148,39 @@ A selection of projects covering different areas of software development and app
       </a>
     </td>
   </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <h3>⚙️ Rule-Based Expert System</h3>
+      <p>An expert system implementation exploring rule-based reasoning and decision-making.</p>
+      <a href="https://github.com/ursleeplessprogrammer/Rule-Based-Expert-System-Project">
+        <img src="https://img.shields.io/badge/View_Project-238636?style=flat-square&logo=github&logoColor=white" />
+      </a>
+    </td>
+    <td width="50%" valign="top">
+      <h3>🌐 Enrollment Website Project 2023–24</h3>
+      <p>Website development project focused on enrollment and registration processes.</p>
+      <a href="https://github.com/ursleeplessprogrammer/Enrollment-Website-Project-2023-24">
+        <img src="https://img.shields.io/badge/View_Project-238636?style=flat-square&logo=github&logoColor=white" />
+      </a>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <h3>🚗 SeKO Car Rental Apps</h3>
+      <p>Application development project for car rental management.</p>
+      <a href="https://github.com/ursleeplessprogrammer/SeKO-Car-Rental-Apps">
+        <img src="https://img.shields.io/badge/View_Project-238636?style=flat-square&logo=github&logoColor=white" />
+      </a>
+    </td>
+    <td width="50%" valign="top">
+      <h3>🎨 Computer Graphics using C#</h3>
+      <p>Computer graphics implementation using C# and OpenTK.</p>
+      <a href="https://github.com/ursleeplessprogrammer/Computer-Graphics-Project-using-C-">
+        <img src="https://img.shields.io/badge/View_Project-238636?style=flat-square&logo=github&logoColor=white" />
+      </a>
+    </td>
+  </tr>
 </table>
-
-### More Projects
-
-**Rule-Based Expert System**
-
-An expert system implementation exploring rule-based reasoning.
-
-[View Repository →](https://github.com/ursleeplessprogrammer/Rule-Based-Expert-System-Project)
-
-**Web & Application Development**
-
-| Project | Repository |
-|:--|:--|
-| Enrollment Website Project 2023–24 | [View →](https://github.com/ursleeplessprogrammer/Enrollment-Website-Project-2023-24) |
-| SeKO Car Rental Apps | [View →](https://github.com/ursleeplessprogrammer/SeKO-Car-Rental-Apps) |
-| Computer Graphics using C# | [View →](https://github.com/ursleeplessprogrammer/Computer-Graphics-Project-using-C-) |
 
 ---
 
