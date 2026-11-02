@@ -17,6 +17,21 @@
 
 ---
 
+## GitHub Statistics
+
+<div align="center">
+
+  <img width="49%" src="https://github-readme-stats.vercel.app/api?username=ursleeplessprogrammer&show_icons=true&hide_border=true&theme=github_dark&rank_icon=github" alt="GitHub Stats" />
+  <img width="49%" src="https://github-readme-stats.vercel.app/api/top-langs/?username=ursleeplessprogrammer&layout=compact&hide_border=true&theme=github_dark&langs_count=8" alt="Top Languages" />
+
+  <br/>
+
+  <img width="70%" src="https://streak-stats.demolab.com?user=ursleeplessprogrammer&theme=github-dark-blue&hide_border=true" alt="GitHub Streak" />
+
+</div>
+
+---
+
 ## About Me
 
 I'm an IT professional with an Informatics background and a strong interest in **Artificial Intelligence, Machine Learning, and Software Development**.
@@ -247,21 +262,6 @@ A growing collection of technical documentation, guides, and personal notes base
   | Spring Boot in General | [Explore →](https://github.com/ursleeplessprogrammer/SpringBoot-in-General) |
 
 </details>
-
----
-
-## GitHub Statistics
-
-<div align="center">
-
-  <img width="49%" src="https://github-readme-stats.vercel.app/api?username=ursleeplessprogrammer&show_icons=true&hide_border=true&theme=github_dark&rank_icon=github" alt="GitHub Stats" />
-  <img width="49%" src="https://github-readme-stats.vercel.app/api/top-langs/?username=ursleeplessprogrammer&layout=compact&hide_border=true&theme=github_dark&langs_count=8" alt="Top Languages" />
-
-  <br/>
-
-  <img width="70%" src="https://streak-stats.demolab.com?user=ursleeplessprogrammer&theme=github-dark-blue&hide_border=true" alt="GitHub Streak" />
-
-</div>
 
 ---
 
