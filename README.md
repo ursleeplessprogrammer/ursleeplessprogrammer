@@ -17,11 +17,9 @@
 
 ---
 
-## GitHub Statistics
-
 <p align="center">
   <img
-    width="95%"
+    width="100%"
     src="./profile/activity.svg"
     alt="GitHub Contribution Activity"
   />
