@@ -20,8 +20,11 @@
 ## GitHub Statistics
 
 <p align="center">
-  <img width="95%"
-    src="https://github-readme-activity-graph.vercel.app/graph?username=ursleeplessprogrammer&theme=github-compact&hide_border=true&area=true" />
+  <img
+    width="95%"
+    src="./profile/activity.svg"
+    alt="GitHub Contribution Activity"
+  />
 </p>
 
 ---
