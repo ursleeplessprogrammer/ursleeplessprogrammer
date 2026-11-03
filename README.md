@@ -23,7 +23,7 @@
 
   <img width="70%" src="https://streak-stats.demolab.com?user=ursleeplessprogrammer&theme=github-dark-blue&hide_border=true" alt="GitHub Streak" />
   <br>
-  ![<username>'s Stats](https://github-readme-stats.vercel.app/api?username=<username>&theme=vue-dark&show_icons=true&hide_border=true&count_private=true)
+  ![ursleeplessprogrammer Stats](https://github-readme-stats.vercel.app/api?ursleeplessprogrammer=<ursleeplessprogrammer>&theme=vue-dark&show_icons=true&hide_border=true&count_private=true)
 
 
 </div>
