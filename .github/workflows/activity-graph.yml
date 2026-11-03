@@ -19,19 +19,18 @@ jobs:
 
     steps:
       # ==========================================
-      # 1. CHECKOUT REPOSITORY
+      # 1. CHECKOUT
       # ==========================================
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           ref: main
           fetch-depth: 0
-          persist-credentials: true
 
       # ==========================================
-      # 2. GENERATE CONTRIBUTION GRAPH
+      # 2. GENERATE CONTRIBUTION DASHBOARD
       # ==========================================
-      - name: Generate activity graph
+      - name: Generate contribution dashboard
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -66,7 +65,8 @@ jobs:
               result.user.contributionsCollection
                 .contributionCalendar;
 
-            const days = calendar.weeks.flatMap(
+            const weeks = calendar.weeks;
+            const days = weeks.flatMap(
               week => week.contributionDays
             );
 
@@ -74,226 +74,477 @@ jobs:
               throw new Error('No contribution data returned.');
             }
 
-            // Graph dimensions
+            // ======================================
+            // DASHBOARD CONFIGURATION
+            // ======================================
+
             const width = 1000;
-            const height = 320;
+            const height = 390;
 
-            const margin = {
-              top: 35,
-              right: 35,
-              bottom: 55,
-              left: 55
-            };
+            const background = '#1f1f23';
+            const panel = '#29292f';
+            const border = '#45454d';
 
-            const chartWidth =
-              width - margin.left - margin.right;
+            const textPrimary = '#f0f0f2';
+            const textSecondary = '#a1a1aa';
 
-            const chartHeight =
-              height - margin.top - margin.bottom;
+            const inactive = '#e6e8eb';
 
-            // Y-axis scale
-            const maxValue = Math.max(
-              4,
-              Math.ceil(
-                Math.max(...days.map(d => d.contributionCount)) / 4
-              ) * 4
+            const levels = [
+              inactive,
+              '#0e4429',
+              '#006d32',
+              '#26a641',
+              '#39d353'
+            ];
+
+            // ======================================
+            // CONTRIBUTION STATISTICS
+            // ======================================
+
+            const total = calendar.totalContributions;
+
+            const bestDay = days.reduce(
+              (best, day) =>
+                day.contributionCount > best.contributionCount
+                  ? day
+                  : best,
+              days[0]
             );
 
-            const x = i =>
-              margin.left +
-              (i / Math.max(days.length - 1, 1)) * chartWidth;
+            const average = (
+              total / days.length
+            ).toFixed(2);
 
-            const y = value =>
-              margin.top +
-              chartHeight -
-              (value / maxValue) * chartHeight;
-
-            // Generate graph points
-            const points = days.map((day, i) => ({
-              x: x(i),
-              y: y(day.contributionCount),
-              date: day.date,
-              count: day.contributionCount
-            }));
-
-            // Line path
-            const linePath = points.map((p, i) =>
-              `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`
-            ).join(' ');
-
-            // Filled area
-            const areaPath = [
-              linePath,
-              `L ${points[points.length - 1].x} ${margin.top + chartHeight}`,
-              `L ${points[0].x} ${margin.top + chartHeight}`,
-              'Z'
-            ].join(' ');
-
-            // Grid and Y-axis labels
-            const gridCount = 4;
-
-            let grid = '';
-            let labels = '';
-
-            for (let i = 0; i <= gridCount; i++) {
-              const value = (maxValue / gridCount) * i;
-              const yy = y(value);
-
-              grid += `
-                <line
-                  x1="${margin.left}"
-                  y1="${yy}"
-                  x2="${width - margin.right}"
-                  y2="${yy}"
-                  stroke="#30363d"
-                  stroke-dasharray="4 5"
-                  opacity="0.8"
-                />
-              `;
-
-              labels += `
-                <text
-                  x="${margin.left - 12}"
-                  y="${yy + 4}"
-                  fill="#8b949e"
-                  font-size="11"
-                  text-anchor="end"
-                >${Math.round(value)}</text>
-              `;
-            }
-
-            // X-axis month labels
-            let dateLabels = '';
-
-            const monthPositions = new Map();
-
-            points.forEach((p, i) => {
-              const date = new Date(p.date + 'T00:00:00Z');
-
-              if (date.getUTCDate() === 1 || i === 0) {
-                const monthKey =
-                  `${date.getUTCFullYear()}-${date.getUTCMonth()}`;
-
-                const month = date.toLocaleString('en-US', {
+            const formatDate = date =>
+              new Date(date + 'T00:00:00Z')
+                .toLocaleDateString('en-US', {
                   month: 'short',
+                  day: 'numeric',
+                  year: 'numeric',
                   timeZone: 'UTC'
                 });
 
-                monthPositions.set(monthKey, {
-                  x: p.x,
-                  label: month
-                });
+            const firstDate = days[0].date;
+            const lastDate = days[days.length - 1].date;
+
+            // ======================================
+            // CALCULATE STREAKS
+            // ======================================
+
+            let longestStreak = 0;
+            let runningStreak = 0;
+
+            for (const day of days) {
+              if (day.contributionCount > 0) {
+                runningStreak++;
+                longestStreak = Math.max(
+                  longestStreak,
+                  runningStreak
+                );
+              } else {
+                runningStreak = 0;
+              }
+            }
+
+            let currentStreak = 0;
+            let streakIndex = days.length - 1;
+
+            // If there are no contributions today,
+            // start checking from yesterday.
+            if (
+              days[streakIndex].contributionCount === 0
+            ) {
+              streakIndex--;
+            }
+
+            while (
+              streakIndex >= 0 &&
+              days[streakIndex].contributionCount > 0
+            ) {
+              currentStreak++;
+              streakIndex--;
+            }
+
+            // ======================================
+            // HEATMAP LAYOUT
+            // ======================================
+
+            const cellSize = 12;
+            const gap = 5;
+
+            const gridX = 58;
+            const gridY = 115;
+
+            const step = cellSize + gap;
+
+            const gridHeight =
+              7 * cellSize + 6 * gap;
+
+            // Determine contribution intensity.
+            const maxContribution = Math.max(
+              1,
+              ...days.map(d => d.contributionCount)
+            );
+
+            function getLevel(count) {
+              if (count === 0) return 0;
+
+              const ratio = count / maxContribution;
+
+              if (ratio <= 0.25) return 1;
+              if (ratio <= 0.50) return 2;
+              if (ratio <= 0.75) return 3;
+
+              return 4;
+            }
+
+            // Map contribution dates to their SVG positions.
+            let cells = '';
+            let monthLabels = '';
+
+            weeks.forEach((week, weekIndex) => {
+              const x = gridX + weekIndex * step;
+
+              week.contributionDays.forEach(day => {
+                const date = new Date(
+                  day.date + 'T00:00:00Z'
+                );
+
+                // JavaScript Sunday = 0.
+                // Convert to Monday = 0.
+                const weekday = (
+                  date.getUTCDay() + 6
+                ) % 7;
+
+                const y = gridY + weekday * step;
+
+                const level = getLevel(
+                  day.contributionCount
+                );
+
+                const color = levels[level];
+
+                cells += `
+                  <rect
+                    x="${x}"
+                    y="${y}"
+                    width="${cellSize}"
+                    height="${cellSize}"
+                    rx="2.5"
+                    fill="${color}">
+                    <title>
+                      ${day.contributionCount} contributions on ${day.date}
+                    </title>
+                  </rect>
+                `;
+              });
+
+              // Display month labels at the first
+              // occurrence of each month.
+              const firstDay = week.contributionDays[0];
+
+              if (firstDay) {
+                const date = new Date(
+                  firstDay.date + 'T00:00:00Z'
+                );
+
+                const month = date.getUTCMonth();
+
+                if (
+                  weekIndex === 0 ||
+                  month !== new Date(
+                    weeks[weekIndex - 1]
+                      .contributionDays[0]
+                      .date + 'T00:00:00Z'
+                  ).getUTCMonth()
+                ) {
+                  const label = date.toLocaleString(
+                    'en-US',
+                    {
+                      month: 'short',
+                      timeZone: 'UTC'
+                    }
+                  );
+
+                  monthLabels += `
+                    <text
+                      x="${x}"
+                      y="99"
+                      fill="${textSecondary}"
+                      font-size="12">
+                      ${label}
+                    </text>
+                  `;
+                }
               }
             });
 
-            for (const item of monthPositions.values()) {
-              dateLabels += `
+            // ======================================
+            // WEEKDAY LABELS
+            // ======================================
+
+            const weekdayLabels = [
+              { label: 'Mon', row: 0 },
+              { label: 'Wed', row: 2 },
+              { label: 'Fri', row: 4 }
+            ];
+
+            let weekdayText = '';
+
+            weekdayLabels.forEach(item => {
+              weekdayText += `
                 <text
-                  x="${item.x}"
-                  y="${height - 20}"
-                  fill="#8b949e"
+                  x="35"
+                  y="${gridY + item.row * step + 10}"
+                  fill="${textSecondary}"
                   font-size="11"
-                  text-anchor="middle"
-                >${item.label}</text>
+                  text-anchor="middle">
+                  ${item.label}
+                </text>
+              `;
+            });
+
+            // ======================================
+            // SVG HELPERS
+            // ======================================
+
+            function svgText(
+              x,
+              y,
+              value,
+              size = 13,
+              color = textPrimary,
+              weight = 400
+            ) {
+              return `
+                <text
+                  x="${x}"
+                  y="${y}"
+                  fill="${color}"
+                  font-size="${size}"
+                  font-weight="${weight}">
+                  ${value}
+                </text>
               `;
             }
 
-            const last = points[points.length - 1];
+            // ======================================
+            // CONTRIBUTION STATISTICS CARD
+            // ======================================
 
-            // SVG output
+            const contributionCard = `
+              <rect
+                x="58"
+                y="260"
+                width="520"
+                height="105"
+                rx="15"
+                fill="${panel}"
+                stroke="${border}"
+                stroke-width="1.2"
+              />
+
+              ${svgText(
+                78, 283, 'Contributions', 16, textPrimary, 600
+              )}
+
+              ${svgText(
+                78, 306, 'Total in the last year', 12, textPrimary, 600
+              )}
+
+              ${svgText(
+                78, 333, total.toLocaleString('en-US'), 23, textPrimary, 700
+              )}
+
+              ${svgText(
+                78, 352,
+                `${formatDate(firstDate)} → ${formatDate(lastDate)}`,
+                10, textSecondary
+              )}
+
+              ${svgText(
+                255, 306, 'Best day', 12, textPrimary, 600
+              )}
+
+              ${svgText(
+                255, 333,
+                bestDay.contributionCount.toString(),
+                23, '#39d353', 700
+              )}
+
+              ${svgText(
+                255, 352,
+                formatDate(bestDay.date),
+                10, textSecondary
+              )}
+
+              ${svgText(
+                420, 306, 'Average', 12, textPrimary, 600
+              )}
+
+              ${svgText(
+                420, 333, average, 23, '#39d353', 700
+              )}
+
+              ${svgText(
+                474, 333, '/ day', 12, textSecondary
+              )}
+            `;
+
+            // ======================================
+            // STREAK STATISTICS CARD
+            // ======================================
+
+            const streakCard = `
+              <rect
+                x="600"
+                y="260"
+                width="342"
+                height="105"
+                rx="15"
+                fill="${panel}"
+                stroke="${border}"
+                stroke-width="1.2"
+              />
+
+              ${svgText(
+                620, 283, 'Streaks', 16, textPrimary, 600
+              )}
+
+              ${svgText(
+                620, 306, 'Longest streak', 12, textPrimary, 600
+              )}
+
+              ${svgText(
+                620, 333,
+                `${longestStreak} days`,
+                23, '#39d353', 700
+              )}
+
+              ${svgText(
+                620, 352,
+                'Consecutive active days',
+                10, textSecondary
+              )}
+
+              ${svgText(
+                790, 306, 'Current streak', 12, textPrimary, 600
+              )}
+
+              ${svgText(
+                790, 333,
+                `${currentStreak} days`,
+                23, '#39d353', 700
+              )}
+
+              ${svgText(
+                790, 352,
+                'Consecutive active days',
+                10, textSecondary
+              )}
+            `;
+
+            // ======================================
+            // FINAL SVG DASHBOARD
+            // ======================================
+
             const svg = `
-            <svg xmlns="http://www.w3.org/2000/svg"
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
               width="${width}"
               height="${height}"
               viewBox="0 0 ${width} ${height}"
               fill="none">
 
-              <defs>
-                <linearGradient
-                  id="areaGradient"
-                  x1="0" y1="0"
-                  x2="0" y2="1">
-
-                  <stop
-                    offset="0%"
-                    stop-color="#58a6ff"
-                    stop-opacity="0.35"/>
-
-                  <stop
-                    offset="100%"
-                    stop-color="#58a6ff"
-                    stop-opacity="0.01"/>
-
-                </linearGradient>
-              </defs>
-
               <rect
                 width="${width}"
                 height="${height}"
-                rx="12"
-                fill="#0d1117"
+                rx="18"
+                fill="${background}"
+                stroke="${border}"
+                stroke-width="1"
               />
 
-              <text
-                x="${margin.left}"
-                y="22"
-                fill="#c9d1d9"
-                font-size="13"
-                font-weight="600"
-              >Contribution Activity</text>
-
-              ${grid}
-              ${labels}
-
-              <path
-                d="${areaPath}"
-                fill="url(#areaGradient)"
-              />
-
-              <path
-                d="${linePath}"
-                stroke="#58a6ff"
-                stroke-width="2.5"
-                stroke-linejoin="round"
-                stroke-linecap="round"
-              />
-
+              <!-- Header -->
               <circle
-                cx="${last.x}"
-                cy="${last.y}"
-                r="4"
-                fill="#58a6ff"
-                stroke="#0d1117"
-                stroke-width="2"
+                cx="65"
+                cy="53"
+                r="20"
+                fill="#30363d"
+                stroke="${border}"
               />
 
-              ${dateLabels}
+              <text
+                x="65"
+                y="59"
+                font-size="20"
+                text-anchor="middle"
+                fill="${textPrimary}">
+                &lt;/&gt;
+              </text>
+
+              ${svgText(
+                100, 48, username, 17, textPrimary, 700
+              )}
+
+              ${svgText(
+                100, 68,
+                'GitHub Contribution Dashboard',
+                12, textSecondary
+              )}
+
+              <!-- Pro-style label -->
+              <rect
+                x="890"
+                y="35"
+                width="55"
+                height="24"
+                rx="12"
+                fill="#e6e6eb"
+              />
 
               <text
-                x="${width - margin.right}"
-                y="22"
-                fill="#8b949e"
+                x="917.5"
+                y="51"
                 font-size="11"
-                text-anchor="end"
-              >${calendar.totalContributions} contributions</text>
+                font-weight="700"
+                text-anchor="middle"
+                fill="#25252a">
+                GITHUB
+              </text>
+
+              <!-- Contribution calendar -->
+              ${monthLabels}
+              ${weekdayText}
+              ${cells}
+
+              <!-- Statistics -->
+              ${contributionCard}
+              ${streakCard}
 
             </svg>
             `;
 
-            // Save SVG
-            fs.mkdirSync('profile', { recursive: true });
+            // Save generated SVG.
+            fs.mkdirSync('profile', {
+              recursive: true
+            });
 
             fs.writeFileSync(
               'profile/activity.svg',
               svg.trim()
             );
 
-            console.log('Contribution graph generated successfully.');
+            console.log('Dashboard generated successfully.');
+            console.log(`Total contributions: ${total}`);
+            console.log(`Longest streak: ${longestStreak}`);
+            console.log(`Current streak: ${currentStreak}`);
 
       # ==========================================
-      # 3. COMMIT, REBASE AND PUSH
+      # 3. COMMIT AND PUSH
       # ==========================================
-      - name: Commit, synchronize and push activity graph
+      - name: Commit and synchronize dashboard
         shell: bash
         run: |
           set -e
@@ -304,51 +555,32 @@ jobs:
           git add profile/activity.svg
 
           if git diff --cached --quiet; then
-            echo "No changes detected in activity graph."
+            echo "No changes detected."
             exit 0
           fi
 
-          git commit -m "Update contribution activity graph"
+          git commit -m "Update contribution dashboard"
 
-          # Retry if another process updates main during the push.
           MAX_RETRIES=3
 
           for attempt in $(seq 1 $MAX_RETRIES); do
-
-            echo "======================================"
             echo "Attempt $attempt of $MAX_RETRIES"
-            echo "======================================"
-
-            echo "Fetching latest remote main..."
 
             git fetch origin main
 
-            echo "Rebasing local commit onto origin/main..."
-
-            if ! git rebase origin/main; then
-              echo "ERROR: Rebase failed."
-              echo "Check for merge conflicts in the Actions log."
-              git rebase --abort || true
-              exit 1
-            fi
-
-            echo "Pushing activity graph..."
+            git rebase origin/main
 
             if git push origin HEAD:main; then
-              echo "======================================"
-              echo "SUCCESS: Activity graph updated!"
-              echo "======================================"
+              echo "Dashboard successfully updated!"
               exit 0
             fi
 
-            echo "Push failed. Another update may have occurred."
+            echo "Push failed. Retrying..."
 
             if [ "$attempt" -lt "$MAX_RETRIES" ]; then
-              echo "Retrying..."
               sleep 3
             fi
-
           done
 
-          echo "ERROR: Unable to push after $MAX_RETRIES attempts."
+          echo "ERROR: Could not push dashboard."
           exit 1
