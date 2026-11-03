@@ -20,9 +20,7 @@
 ## GitHub Statistics
 
 <div align="center">
-
   <img width="70%" src="https://streak-stats.demolab.com?user=ursleeplessprogrammer&theme=github-dark-blue&hide_border=true" alt="GitHub Streak" />
-
 </div>
 
 ---
