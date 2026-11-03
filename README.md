@@ -180,6 +180,17 @@ A selection of projects covering artificial intelligence, machine learning, web 
     <td width="50%" valign="top">
     </td>
   </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <h3>📊 Customer Complaint Insights</h3>
+      <p>Machine Learning experimentation that make uses of the CFPB’s current Consumer Complaint Database API.</p>
+      <a href="https://github.com/ursleeplessprogrammer/Customer-Complaint-Insights">
+        <img src="https://img.shields.io/badge/View_Project-238636?style=flat-square&logo=github&logoColor=white" />
+      </a>
+    </td>
+    <td width="50%" valign="top">
+    </td>
+  </tr>
 </table>
 
 ### 🌐 Web & Application Development
