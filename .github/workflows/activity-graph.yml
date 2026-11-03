@@ -1,0 +1,105 @@
+
+name: Update Activity Graph
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Generate contribution graph
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+
+            const query = `
+              query {
+                user(login: "ursleeplessprogrammer") {
+                  contributionsCollection {
+                    contributionCalendar {
+                      weeks {
+                        contributionDays {
+                          date
+                          contributionCount
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            `;
+
+            const result = await github.graphql(query);
+            const calendar =
+              result.user.contributionsCollection
+                .contributionCalendar;
+
+            const weeks = calendar.weeks;
+            const cell = 12;
+            const gap = 4;
+
+            const colors = [
+              '#161b22',
+              '#0e4429',
+              '#006d32',
+              '#26a641',
+              '#39d353'
+            ];
+
+            let rects = '';
+
+            weeks.forEach((week, x) => {
+              week.contributionDays.forEach(day => {
+                const count = day.contributionCount;
+
+                const level = count === 0 ? 0 :
+                  count < 3 ? 1 :
+                  count < 6 ? 2 :
+                  count < 10 ? 3 : 4;
+
+                const y = new Date(day.date + 'T00:00:00Z')
+                  .getUTCDay();
+
+                rects += `
+                  <rect x="${x * (cell + gap)}"
+                    y="${y * (cell + gap)}"
+                    width="${cell}" height="${cell}"
+                    rx="3" fill="${colors[level]}">
+                    <title>${day.date}: ${count} contributions</title>
+                  </rect>`;
+              });
+            });
+
+            const width = weeks.length * (cell + gap);
+            const height = 7 * (cell + gap);
+
+            const svg = `
+            <svg xmlns="http://www.w3.org/2000/svg"
+              width="${width}" height="${height}"
+              viewBox="0 0 ${width} ${height}">
+              <rect width="100%" height="100%" fill="#0d1117"/>
+              ${rects}
+            </svg>`;
+
+            fs.mkdirSync('profile', { recursive: true });
+            fs.writeFileSync('profile/activity.svg', svg);
+
+      - name: Commit activity graph
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add profile/activity.svg
+          git commit -m "Update contribution graph" || exit 0
+          git push
