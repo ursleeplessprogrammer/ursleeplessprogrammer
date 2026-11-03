@@ -150,7 +150,6 @@ jobs:
             }
 
             let dateLabels = '';
-
             const monthPositions = new Map();
 
             points.forEach((p, i) => {
@@ -261,20 +260,39 @@ jobs:
               svg.trim()
             );
 
-      - name: Commit activity graph
+      - name: Commit and push activity graph
+        shell: bash
         run: |
+          set -e
+
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
           git add profile/activity.svg
 
           if git diff --cached --quiet; then
-            echo "No changes to activity graph."
+            echo "No changes detected in activity graph."
             exit 0
           fi
 
           git commit -m "Update contribution activity graph"
 
-          git pull --rebase origin main
+          echo "=================================="
+          echo "Fetching latest remote changes..."
+          echo "=================================="
 
-          git push origin main
+          git fetch origin main
+
+          echo "=================================="
+          echo "Rebasing local commit..."
+          echo "=================================="
+
+          git rebase origin/main
+
+          echo "=================================="
+          echo "Pushing updated activity graph..."
+          echo "=================================="
+
+          git push origin HEAD:main
+
+          echo "Activity graph successfully updated!"
