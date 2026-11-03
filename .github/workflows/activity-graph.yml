@@ -18,12 +18,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # ==========================================
+      # 1. CHECKOUT REPOSITORY
+      # ==========================================
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           ref: main
           fetch-depth: 0
+          persist-credentials: true
 
+      # ==========================================
+      # 2. GENERATE CONTRIBUTION GRAPH
+      # ==========================================
       - name: Generate activity graph
         uses: actions/github-script@v7
         with:
@@ -67,6 +74,7 @@ jobs:
               throw new Error('No contribution data returned.');
             }
 
+            // Graph dimensions
             const width = 1000;
             const height = 320;
 
@@ -83,6 +91,7 @@ jobs:
             const chartHeight =
               height - margin.top - margin.bottom;
 
+            // Y-axis scale
             const maxValue = Math.max(
               4,
               Math.ceil(
@@ -99,6 +108,7 @@ jobs:
               chartHeight -
               (value / maxValue) * chartHeight;
 
+            // Generate graph points
             const points = days.map((day, i) => ({
               x: x(i),
               y: y(day.contributionCount),
@@ -106,10 +116,12 @@ jobs:
               count: day.contributionCount
             }));
 
+            // Line path
             const linePath = points.map((p, i) =>
               `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`
             ).join(' ');
 
+            // Filled area
             const areaPath = [
               linePath,
               `L ${points[points.length - 1].x} ${margin.top + chartHeight}`,
@@ -117,6 +129,7 @@ jobs:
               'Z'
             ].join(' ');
 
+            // Grid and Y-axis labels
             const gridCount = 4;
 
             let grid = '';
@@ -149,36 +162,45 @@ jobs:
               `;
             }
 
+            // X-axis month labels
             let dateLabels = '';
+
             const monthPositions = new Map();
 
             points.forEach((p, i) => {
               const date = new Date(p.date + 'T00:00:00Z');
 
               if (date.getUTCDate() === 1 || i === 0) {
+                const monthKey =
+                  `${date.getUTCFullYear()}-${date.getUTCMonth()}`;
+
                 const month = date.toLocaleString('en-US', {
                   month: 'short',
                   timeZone: 'UTC'
                 });
 
-                monthPositions.set(month, p.x);
+                monthPositions.set(monthKey, {
+                  x: p.x,
+                  label: month
+                });
               }
             });
 
-            for (const [month, position] of monthPositions) {
+            for (const item of monthPositions.values()) {
               dateLabels += `
                 <text
-                  x="${position}"
+                  x="${item.x}"
                   y="${height - 20}"
                   fill="#8b949e"
                   font-size="11"
                   text-anchor="middle"
-                >${month}</text>
+                >${item.label}</text>
               `;
             }
 
             const last = points[points.length - 1];
 
+            // SVG output
             const svg = `
             <svg xmlns="http://www.w3.org/2000/svg"
               width="${width}"
@@ -191,12 +213,17 @@ jobs:
                   id="areaGradient"
                   x1="0" y1="0"
                   x2="0" y2="1">
-                  <stop offset="0%"
+
+                  <stop
+                    offset="0%"
                     stop-color="#58a6ff"
                     stop-opacity="0.35"/>
-                  <stop offset="100%"
+
+                  <stop
+                    offset="100%"
                     stop-color="#58a6ff"
                     stop-opacity="0.01"/>
+
                 </linearGradient>
               </defs>
 
@@ -253,6 +280,7 @@ jobs:
             </svg>
             `;
 
+            // Save SVG
             fs.mkdirSync('profile', { recursive: true });
 
             fs.writeFileSync(
@@ -260,7 +288,12 @@ jobs:
               svg.trim()
             );
 
-      - name: Commit and push activity graph
+            console.log('Contribution graph generated successfully.');
+
+      # ==========================================
+      # 3. COMMIT, REBASE AND PUSH
+      # ==========================================
+      - name: Commit, synchronize and push activity graph
         shell: bash
         run: |
           set -e
@@ -277,22 +310,45 @@ jobs:
 
           git commit -m "Update contribution activity graph"
 
-          echo "=================================="
-          echo "Fetching latest remote changes..."
-          echo "=================================="
+          # Retry if another process updates main during the push.
+          MAX_RETRIES=3
 
-          git fetch origin main
+          for attempt in $(seq 1 $MAX_RETRIES); do
 
-          echo "=================================="
-          echo "Rebasing local commit..."
-          echo "=================================="
+            echo "======================================"
+            echo "Attempt $attempt of $MAX_RETRIES"
+            echo "======================================"
 
-          git rebase origin/main
+            echo "Fetching latest remote main..."
 
-          echo "=================================="
-          echo "Pushing updated activity graph..."
-          echo "=================================="
+            git fetch origin main
 
-          git push origin HEAD:main
+            echo "Rebasing local commit onto origin/main..."
 
-          echo "Activity graph successfully updated!"
+            if ! git rebase origin/main; then
+              echo "ERROR: Rebase failed."
+              echo "Check for merge conflicts in the Actions log."
+              git rebase --abort || true
+              exit 1
+            fi
+
+            echo "Pushing activity graph..."
+
+            if git push origin HEAD:main; then
+              echo "======================================"
+              echo "SUCCESS: Activity graph updated!"
+              echo "======================================"
+              exit 0
+            fi
+
+            echo "Push failed. Another update may have occurred."
+
+            if [ "$attempt" -lt "$MAX_RETRIES" ]; then
+              echo "Retrying..."
+              sleep 3
+            fi
+
+          done
+
+          echo "ERROR: Unable to push after $MAX_RETRIES attempts."
+          exit 1
