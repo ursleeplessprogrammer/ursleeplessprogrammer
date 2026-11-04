@@ -39,8 +39,6 @@ I enjoy experimenting with new ideas, developing applications, and documenting w
 
 ## Tech Stack
 
-Technologies and tools I work with or explore.
-
 **Languages**
 
 <p>
