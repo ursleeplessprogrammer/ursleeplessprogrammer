@@ -40,6 +40,7 @@ I enjoy experimenting with new ideas, developing applications, and documenting w
 ## Tech Stack
 
 <details>
+  <summary><b>Tech Stack Lists</b></summary>
   
   **👨‍💻 Programming and Markup Languages**
   
@@ -79,7 +80,7 @@ I enjoy experimenting with new ideas, developing applications, and documenting w
 </p>
   </p>
 
-  🗄️** Databases and Cloud Hosting**
+  **🗄️ Databases and Cloud Hosting**
 
   <p>
     <img src="https://img.shields.io/badge/Notion-000000?style=flat-square&logo=notion&logoColor=white" alt="Notion" />
