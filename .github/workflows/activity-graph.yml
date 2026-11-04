@@ -1,9 +1,9 @@
-
 name: Update Contribution Activity Graph
 
 on:
   schedule:
-    - cron: "0 0 * * *"
+    # Runs every 1 hours, at minute 17 (UTC).
+    - cron: "17 */1 * * *"
   workflow_dispatch:
 
 permissions:
@@ -18,31 +18,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # ==========================================
-      # 1. CHECKOUT
-      # ==========================================
-      - name: Checkout repository
+      - name: Check out main
         uses: actions/checkout@v4
         with:
           ref: main
           fetch-depth: 0
 
-      # ==========================================
-      # 2. GENERATE CONTRIBUTION DASHBOARD
-      # ==========================================
       - name: Generate contribution dashboard
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const fs = require('fs');
+            const fs = require("fs");
 
-            const username = 'ursleeplessprogrammer';
+            const username = "ursleeplessprogrammer";
+
+            const to = new Date();
+            const from = new Date(to);
+            from.setUTCFullYear(from.getUTCFullYear() - 1);
 
             const query = `
-              query($login: String!) {
+              query(
+                $login: String!,
+                $from: DateTime!,
+                $to: DateTime!
+              ) {
                 user(login: $login) {
-                  contributionsCollection {
+                  contributionsCollection(from: $from, to: $to) {
                     contributionCalendar {
                       totalContributions
                       weeks {
@@ -58,49 +60,43 @@ jobs:
             `;
 
             const result = await github.graphql(query, {
-              login: username
+              login: username,
+              from: from.toISOString(),
+              to: to.toISOString()
             });
 
-            const calendar =
-              result.user.contributionsCollection
-                .contributionCalendar;
+            const user = result.user;
 
-            const weeks = calendar.weeks;
-            const days = weeks.flatMap(
-              week => week.contributionDays
-            );
-
-            if (!days.length) {
-              throw new Error('No contribution data returned.');
+            if (!user) {
+              throw new Error(`GitHub user not found: ${username}`);
             }
 
-            // ======================================
-            // DASHBOARD CONFIGURATION
-            // ======================================
+            const calendar =
+              user.contributionsCollection.contributionCalendar;
+
+            const weeks = calendar.weeks;
+            const days = weeks.flatMap(week => week.contributionDays);
+
+            if (!days.length) {
+              throw new Error("No contribution data returned.");
+            }
 
             const width = 1000;
             const height = 390;
 
-            const background = '#1f1f23';
-            const panel = '#29292f';
-            const border = '#45454d';
-
-            const textPrimary = '#f0f0f2';
-            const textSecondary = '#a1a1aa';
-
-            const inactive = '#e6e8eb';
+            const background = "#1f1f23";
+            const panel = "#29292f";
+            const border = "#45454d";
+            const textPrimary = "#f0f0f2";
+            const textSecondary = "#a1a1aa";
 
             const levels = [
-              inactive,
-              '#0e4429',
-              '#006d32',
-              '#26a641',
-              '#39d353'
+              "#e6e8eb",
+              "#0e4429",
+              "#006d32",
+              "#26a641",
+              "#39d353"
             ];
-
-            // ======================================
-            // CONTRIBUTION STATISTICS
-            // ======================================
 
             const total = calendar.totalContributions;
 
@@ -112,49 +108,35 @@ jobs:
               days[0]
             );
 
-            const average = (
-              total / days.length
-            ).toFixed(2);
+            const average = (total / days.length).toFixed(2);
 
             const formatDate = date =>
-              new Date(date + 'T00:00:00Z')
-                .toLocaleDateString('en-US', {
-                  month: 'short',
-                  day: 'numeric',
-                  year: 'numeric',
-                  timeZone: 'UTC'
-                });
+              new Date(`${date}T00:00:00Z`).toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+                timeZone: "UTC"
+              });
 
-            const firstDate = days[0].date;
-            const lastDate = days[days.length - 1].date;
-
-            // ======================================
-            // CALCULATE STREAKS
-            // ======================================
-
+            // Calculate the longest active-day streak.
             let longestStreak = 0;
             let runningStreak = 0;
 
             for (const day of days) {
               if (day.contributionCount > 0) {
                 runningStreak++;
-                longestStreak = Math.max(
-                  longestStreak,
-                  runningStreak
-                );
+                longestStreak = Math.max(longestStreak, runningStreak);
               } else {
                 runningStreak = 0;
               }
             }
 
+            // Calculate the current streak. If today has no contributions,
+            // check whether yesterday was the final active day.
             let currentStreak = 0;
             let streakIndex = days.length - 1;
 
-            // If there are no contributions today,
-            // start checking from yesterday.
-            if (
-              days[streakIndex].contributionCount === 0
-            ) {
+            if (days[streakIndex].contributionCount === 0) {
               streakIndex--;
             }
 
@@ -166,25 +148,16 @@ jobs:
               streakIndex--;
             }
 
-            // ======================================
-            // HEATMAP LAYOUT
-            // ======================================
-
+            // Heatmap layout.
             const cellSize = 12;
             const gap = 5;
-
             const gridX = 58;
             const gridY = 115;
-
             const step = cellSize + gap;
 
-            const gridHeight =
-              7 * cellSize + 6 * gap;
-
-            // Determine contribution intensity.
             const maxContribution = Math.max(
               1,
-              ...days.map(d => d.contributionCount)
+              ...days.map(day => day.contributionCount)
             );
 
             function getLevel(count) {
@@ -193,37 +166,23 @@ jobs:
               const ratio = count / maxContribution;
 
               if (ratio <= 0.25) return 1;
-              if (ratio <= 0.50) return 2;
+              if (ratio <= 0.5) return 2;
               if (ratio <= 0.75) return 3;
-
               return 4;
             }
 
-            // Map contribution dates to their SVG positions.
-            let cells = '';
-            let monthLabels = '';
+            let cells = "";
+            let monthLabels = "";
+            let previousMonth = null;
 
             weeks.forEach((week, weekIndex) => {
               const x = gridX + weekIndex * step;
 
               week.contributionDays.forEach(day => {
-                const date = new Date(
-                  day.date + 'T00:00:00Z'
-                );
-
-                // JavaScript Sunday = 0.
-                // Convert to Monday = 0.
-                const weekday = (
-                  date.getUTCDay() + 6
-                ) % 7;
-
+                const date = new Date(`${day.date}T00:00:00Z`);
+                const weekday = (date.getUTCDay() + 6) % 7;
                 const y = gridY + weekday * step;
-
-                const level = getLevel(
-                  day.contributionCount
-                );
-
-                const color = levels[level];
+                const color = levels[getLevel(day.contributionCount)];
 
                 cells += `
                   <rect
@@ -233,39 +192,22 @@ jobs:
                     height="${cellSize}"
                     rx="2.5"
                     fill="${color}">
-                    <title>
-                      ${day.contributionCount} contributions on ${day.date}
-                    </title>
+                    <title>${day.contributionCount} contributions on ${day.date}</title>
                   </rect>
                 `;
               });
 
-              // Display month labels at the first
-              // occurrence of each month.
               const firstDay = week.contributionDays[0];
 
               if (firstDay) {
-                const date = new Date(
-                  firstDay.date + 'T00:00:00Z'
-                );
-
+                const date = new Date(`${firstDay.date}T00:00:00Z`);
                 const month = date.getUTCMonth();
 
-                if (
-                  weekIndex === 0 ||
-                  month !== new Date(
-                    weeks[weekIndex - 1]
-                      .contributionDays[0]
-                      .date + 'T00:00:00Z'
-                  ).getUTCMonth()
-                ) {
-                  const label = date.toLocaleString(
-                    'en-US',
-                    {
-                      month: 'short',
-                      timeZone: 'UTC'
-                    }
-                  );
+                if (previousMonth === null || month !== previousMonth) {
+                  const label = date.toLocaleString("en-US", {
+                    month: "short",
+                    timeZone: "UTC"
+                  });
 
                   monthLabels += `
                     <text
@@ -276,23 +218,19 @@ jobs:
                       ${label}
                     </text>
                   `;
+
+                  previousMonth = month;
                 }
               }
             });
 
-            // ======================================
-            // WEEKDAY LABELS
-            // ======================================
+            let weekdayText = "";
 
-            const weekdayLabels = [
-              { label: 'Mon', row: 0 },
-              { label: 'Wed', row: 2 },
-              { label: 'Fri', row: 4 }
-            ];
-
-            let weekdayText = '';
-
-            weekdayLabels.forEach(item => {
+            [
+              { label: "Mon", row: 0 },
+              { label: "Wed", row: 2 },
+              { label: "Fri", row: 4 }
+            ].forEach(item => {
               weekdayText += `
                 <text
                   x="35"
@@ -304,10 +242,6 @@ jobs:
                 </text>
               `;
             });
-
-            // ======================================
-            // SVG HELPERS
-            // ======================================
 
             function svgText(
               x,
@@ -329,10 +263,6 @@ jobs:
               `;
             }
 
-            // ======================================
-            // CONTRIBUTION STATISTICS CARD
-            // ======================================
-
             const contributionCard = `
               <rect
                 x="58"
@@ -345,56 +275,32 @@ jobs:
                 stroke-width="1.2"
               />
 
+              ${svgText(78, 283, "Contributions", 16, textPrimary, 600)}
+              ${svgText(78, 306, "Total in the last year", 12, textPrimary, 600)}
+              ${svgText(78, 333, total.toLocaleString("en-US"), 23, textPrimary, 700)}
               ${svgText(
-                78, 283, 'Contributions', 16, textPrimary, 600
+                78,
+                352,
+                `${formatDate(days[0].date)} → ${formatDate(days[days.length - 1].date)}`,
+                10,
+                textSecondary
               )}
 
+              ${svgText(255, 306, "Best day", 12, textPrimary, 600)}
               ${svgText(
-                78, 306, 'Total in the last year', 12, textPrimary, 600
+                255,
+                333,
+                String(bestDay.contributionCount),
+                23,
+                "#39d353",
+                700
               )}
+              ${svgText(255, 352, formatDate(bestDay.date), 10, textSecondary)}
 
-              ${svgText(
-                78, 333, total.toLocaleString('en-US'), 23, textPrimary, 700
-              )}
-
-              ${svgText(
-                78, 352,
-                `${formatDate(firstDate)} → ${formatDate(lastDate)}`,
-                10, textSecondary
-              )}
-
-              ${svgText(
-                255, 306, 'Best day', 12, textPrimary, 600
-              )}
-
-              ${svgText(
-                255, 333,
-                bestDay.contributionCount.toString(),
-                23, '#39d353', 700
-              )}
-
-              ${svgText(
-                255, 352,
-                formatDate(bestDay.date),
-                10, textSecondary
-              )}
-
-              ${svgText(
-                420, 306, 'Average', 12, textPrimary, 600
-              )}
-
-              ${svgText(
-                420, 333, average, 23, '#39d353', 700
-              )}
-
-              ${svgText(
-                474, 333, '/ day', 12, textSecondary
-              )}
+              ${svgText(420, 306, "Average", 12, textPrimary, 600)}
+              ${svgText(420, 333, average, 23, "#39d353", 700)}
+              ${svgText(474, 333, "/ day", 12, textSecondary)}
             `;
-
-            // ======================================
-            // STREAK STATISTICS CARD
-            // ======================================
 
             const streakCard = `
               <rect
@@ -408,46 +314,15 @@ jobs:
                 stroke-width="1.2"
               />
 
-              ${svgText(
-                620, 283, 'Streaks', 16, textPrimary, 600
-              )}
+              ${svgText(620, 283, "Streaks", 16, textPrimary, 600)}
+              ${svgText(620, 306, "Longest streak", 12, textPrimary, 600)}
+              ${svgText(620, 333, `${longestStreak} days`, 23, "#39d353", 700)}
+              ${svgText(620, 352, "Consecutive active days", 10, textSecondary)}
 
-              ${svgText(
-                620, 306, 'Longest streak', 12, textPrimary, 600
-              )}
-
-              ${svgText(
-                620, 333,
-                `${longestStreak} days`,
-                23, '#39d353', 700
-              )}
-
-              ${svgText(
-                620, 352,
-                'Consecutive active days',
-                10, textSecondary
-              )}
-
-              ${svgText(
-                790, 306, 'Current streak', 12, textPrimary, 600
-              )}
-
-              ${svgText(
-                790, 333,
-                `${currentStreak} days`,
-                23, '#39d353', 700
-              )}
-
-              ${svgText(
-                790, 352,
-                'Consecutive active days',
-                10, textSecondary
-              )}
+              ${svgText(790, 306, "Current streak", 12, textPrimary, 600)}
+              ${svgText(790, 333, `${currentStreak} days`, 23, "#39d353", 700)}
+              ${svgText(790, 352, "Consecutive active days", 10, textSecondary)}
             `;
-
-            // ======================================
-            // FINAL SVG DASHBOARD
-            // ======================================
 
             const svg = `
             <svg
@@ -466,7 +341,6 @@ jobs:
                 stroke-width="1"
               />
 
-              <!-- Header -->
               <circle
                 cx="65"
                 cy="53"
@@ -484,17 +358,9 @@ jobs:
                 &lt;/&gt;
               </text>
 
-              ${svgText(
-                100, 48, username, 17, textPrimary, 700
-              )}
+              ${svgText(100, 48, username, 17, textPrimary, 700)}
+              ${svgText(100, 68, "GitHub Contribution Dashboard", 12, textSecondary)}
 
-              ${svgText(
-                100, 68,
-                'GitHub Contribution Dashboard',
-                12, textSecondary
-              )}
-
-              <!-- Pro-style label -->
               <rect
                 x="890"
                 y="35"
@@ -514,37 +380,23 @@ jobs:
                 GITHUB
               </text>
 
-              <!-- Contribution calendar -->
               ${monthLabels}
               ${weekdayText}
               ${cells}
-
-              <!-- Statistics -->
               ${contributionCard}
               ${streakCard}
-
             </svg>
             `;
 
-            // Save generated SVG.
-            fs.mkdirSync('profile', {
-              recursive: true
-            });
+            fs.mkdirSync("profile", { recursive: true });
+            fs.writeFileSync("profile/activity.svg", svg.trim(), "utf8");
 
-            fs.writeFileSync(
-              'profile/activity.svg',
-              svg.trim()
-            );
-
-            console.log('Dashboard generated successfully.');
+            console.log("Dashboard generated successfully.");
             console.log(`Total contributions: ${total}`);
             console.log(`Longest streak: ${longestStreak}`);
             console.log(`Current streak: ${currentStreak}`);
 
-      # ==========================================
-      # 3. COMMIT AND PUSH
-      # ==========================================
-      - name: Commit and synchronize dashboard
+      - name: Commit and push dashboard
         shell: bash
         run: |
           set -e
@@ -563,24 +415,22 @@ jobs:
 
           MAX_RETRIES=3
 
-          for attempt in $(seq 1 $MAX_RETRIES); do
-            echo "Attempt $attempt of $MAX_RETRIES"
+          for attempt in $(seq 1 "$MAX_RETRIES"); do
+            echo "Push attempt $attempt of $MAX_RETRIES"
 
             git fetch origin main
-
             git rebase origin/main
 
             if git push origin HEAD:main; then
-              echo "Dashboard successfully updated!"
+              echo "Dashboard successfully updated."
               exit 0
             fi
 
-            echo "Push failed. Retrying..."
-
             if [ "$attempt" -lt "$MAX_RETRIES" ]; then
+              echo "Push failed; retrying..."
               sleep 3
             fi
           done
 
-          echo "ERROR: Could not push dashboard."
+          echo "Could not push the dashboard after $MAX_RETRIES attempts."
           exit 1
