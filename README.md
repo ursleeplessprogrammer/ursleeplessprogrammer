@@ -217,6 +217,15 @@ A selection of projects covering artificial intelligence, machine learning, web 
       </a>
     </td>
   </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <h3>🔎 Social Media Topic Scrapper</h3>
+      <p>This is a Python project that analyzes social-media posts related to user-selected keywords or topics.</p>
+      <a href="https://github.com/ursleeplessprogrammer/Social-Media-Topic-Scrapper">
+        <img src="https://img.shields.io/badge/View_Project-238636?style=flat-square&logo=github&logoColor=white" />
+      </a>
+    </td>
+  </tr>
 </table>
 
 ### 🌐 Web & Application Development
