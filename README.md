@@ -148,122 +148,126 @@ Working in IT operations with responsibilities involving:
 
 A selection of projects covering artificial intelligence, machine learning, web development, and application development.
 
-### 🧠 AI & Machine Learning Projects
+<details>
+  <summary>🧠 AI & Machine Learning Projects</summary>
+  <table>
+    <tr>
+      <td width="50%" valign="top">
+        <h3>🧠 Hate Speech Classification</h3>
+        <p>Multi-label classification of Indonesian Twitter hate speech using neural networks and Semantic-Guided Modeling.</p>
+        <a href="https://github.com/ursleeplessprogrammer/Hate-Speech-Classification-on-Twitter">
+          <img src="https://img.shields.io/badge/View_Project-238636?style=flat-square&logo=github&logoColor=white" />
+        </a>
+      </td>
+      <td width="50%" valign="top">
+        <h3>🤖 Auto Summary Bot</h3>
+        <p>AI-powered Telegram bot that summarizes text, URLs, PDFs, and YouTube videos into concise insights.</p>
+        <a href="https://github.com/ursleeplessprogrammer/Auto-Summary-Bot">
+          <img src="https://img.shields.io/badge/View_Project-238636?style=flat-square&logo=github&logoColor=white" />
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <td width="50%" valign="top">
+        <h3>🔍 AML Transaction Alert Prioritization</h3>
+        <p>SAML-D based approach to prioritizing potentially suspicious banking transaction alerts.</p>
+        <a href="https://github.com/ursleeplessprogrammer/AML-Transaction-Alert-Prioritization">
+          <img src="https://img.shields.io/badge/View_Project-238636?style=flat-square&logo=github&logoColor=white" />
+        </a>
+      </td>
+      <td width="50%" valign="top">
+        <h3>📊 Incident Workload Forecasting</h3>
+        <p>Machine learning project exploring incident workload forecasting for operational planning.</p>
+        <a href="https://github.com/ursleeplessprogrammer/Incident-Workload-Forecasting">
+          <img src="https://img.shields.io/badge/View_Project-238636?style=flat-square&logo=github&logoColor=white" />
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <td width="50%" valign="top">
+        <h3>👁️ Multiple Object Tracking</h3>
+        <p>Computer vision implementation combining DeepSORT and YOLOv3 for object detection and tracking.</p>
+        <a href="https://github.com/ursleeplessprogrammer/Multiple-Object-Tracking-with-DeepSORT-and-YOLOv3">
+          <img src="https://img.shields.io/badge/View_Project-238636?style=flat-square&logo=github&logoColor=white" />
+        </a>
+      </td>
+      <td width="50%" valign="top">
+        <h3>💳 Bank Transaction Anomaly Detection</h3>
+        <p>Machine learning experimentation focused on identifying unusual patterns in financial transaction data.</p>
+        <a href="https://github.com/ursleeplessprogrammer/Fraud-Detection-on-Transaction-Data">
+          <img src="https://img.shields.io/badge/View_Project-238636?style=flat-square&logo=github&logoColor=white" />
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <td width="50%" valign="top">
+        <h3>⚙️ Rule-Based Expert System</h3>
+        <p>An expert system implementation exploring rule-based reasoning and decision-making.</p>
+        <a href="https://github.com/ursleeplessprogrammer/Rule-Based-Expert-System-Project">
+          <img src="https://img.shields.io/badge/View_Project-238636?style=flat-square&logo=github&logoColor=white" />
+        </a>
+      </td>
+      <td width="50%" valign="top">
+        <h3>📊 Customer Complaint Insights</h3>
+        <p>Machine Learning experimentation that make uses of the CFPB’s current Consumer Complaint Database API.</p>
+        <a href="https://github.com/ursleeplessprogrammer/Customer-Complaint-Insights">
+          <img src="https://img.shields.io/badge/View_Project-238636?style=flat-square&logo=github&logoColor=white" />
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <td width="50%" valign="top">
+        <h3>🔎 Social Media Topic Scrapper</h3>
+        <p>This is a Python project that analyzes social-media posts related to user-selected keywords or topics.</p>
+        <a href="https://github.com/ursleeplessprogrammer/Social-Media-Topic-Scrapper">
+          <img src="https://img.shields.io/badge/View_Project-238636?style=flat-square&logo=github&logoColor=white" />
+        </a>
+      </td>
+      <td width="50%" valign="top">
+        <h3>💍 Wedding Planner Dashboard</h3>
+        <p>This project utilizes Google Apps Script to create and format a wedding-planning spreadsheet.</p>
+        <a href="https://github.com/ursleeplessprogrammer/Wedding-Planner-Dashboard">
+          <img src="https://img.shields.io/badge/View_Project-238636?style=flat-square&logo=github&logoColor=white" />
+        </a>
+      </td>
+    </tr>
+  </table>
+  
+</details>
 
-<table>
-  <tr>
-    <td width="50%" valign="top">
-      <h3>🧠 Hate Speech Classification</h3>
-      <p>Multi-label classification of Indonesian Twitter hate speech using neural networks and Semantic-Guided Modeling.</p>
-      <a href="https://github.com/ursleeplessprogrammer/Hate-Speech-Classification-on-Twitter">
-        <img src="https://img.shields.io/badge/View_Project-238636?style=flat-square&logo=github&logoColor=white" />
-      </a>
-    </td>
-    <td width="50%" valign="top">
-      <h3>🤖 Auto Summary Bot</h3>
-      <p>AI-powered Telegram bot that summarizes text, URLs, PDFs, and YouTube videos into concise insights.</p>
-      <a href="https://github.com/ursleeplessprogrammer/Auto-Summary-Bot">
-        <img src="https://img.shields.io/badge/View_Project-238636?style=flat-square&logo=github&logoColor=white" />
-      </a>
-    </td>
-  </tr>
-  <tr>
-    <td width="50%" valign="top">
-      <h3>🔍 AML Transaction Alert Prioritization</h3>
-      <p>SAML-D based approach to prioritizing potentially suspicious banking transaction alerts.</p>
-      <a href="https://github.com/ursleeplessprogrammer/AML-Transaction-Alert-Prioritization">
-        <img src="https://img.shields.io/badge/View_Project-238636?style=flat-square&logo=github&logoColor=white" />
-      </a>
-    </td>
-    <td width="50%" valign="top">
-      <h3>📊 Incident Workload Forecasting</h3>
-      <p>Machine learning project exploring incident workload forecasting for operational planning.</p>
-      <a href="https://github.com/ursleeplessprogrammer/Incident-Workload-Forecasting">
-        <img src="https://img.shields.io/badge/View_Project-238636?style=flat-square&logo=github&logoColor=white" />
-      </a>
-    </td>
-  </tr>
-  <tr>
-    <td width="50%" valign="top">
-      <h3>👁️ Multiple Object Tracking</h3>
-      <p>Computer vision implementation combining DeepSORT and YOLOv3 for object detection and tracking.</p>
-      <a href="https://github.com/ursleeplessprogrammer/Multiple-Object-Tracking-with-DeepSORT-and-YOLOv3">
-        <img src="https://img.shields.io/badge/View_Project-238636?style=flat-square&logo=github&logoColor=white" />
-      </a>
-    </td>
-    <td width="50%" valign="top">
-      <h3>💳 Bank Transaction Anomaly Detection</h3>
-      <p>Machine learning experimentation focused on identifying unusual patterns in financial transaction data.</p>
-      <a href="https://github.com/ursleeplessprogrammer/Fraud-Detection-on-Transaction-Data">
-        <img src="https://img.shields.io/badge/View_Project-238636?style=flat-square&logo=github&logoColor=white" />
-      </a>
-    </td>
-  </tr>
-  <tr>
-    <td width="50%" valign="top">
-      <h3>⚙️ Rule-Based Expert System</h3>
-      <p>An expert system implementation exploring rule-based reasoning and decision-making.</p>
-      <a href="https://github.com/ursleeplessprogrammer/Rule-Based-Expert-System-Project">
-        <img src="https://img.shields.io/badge/View_Project-238636?style=flat-square&logo=github&logoColor=white" />
-      </a>
-    </td>
-    <td width="50%" valign="top">
-      <h3>📊 Customer Complaint Insights</h3>
-      <p>Machine Learning experimentation that make uses of the CFPB’s current Consumer Complaint Database API.</p>
-      <a href="https://github.com/ursleeplessprogrammer/Customer-Complaint-Insights">
-        <img src="https://img.shields.io/badge/View_Project-238636?style=flat-square&logo=github&logoColor=white" />
-      </a>
-    </td>
-  </tr>
-  <tr>
-    <td width="50%" valign="top">
-      <h3>🔎 Social Media Topic Scrapper</h3>
-      <p>This is a Python project that analyzes social-media posts related to user-selected keywords or topics.</p>
-      <a href="https://github.com/ursleeplessprogrammer/Social-Media-Topic-Scrapper">
-        <img src="https://img.shields.io/badge/View_Project-238636?style=flat-square&logo=github&logoColor=white" />
-      </a>
-    </td>
-    <td width="50%" valign="top">
-      <h3>💍 Wedding Planner Dashboard</h3>
-      <p>This project utilizes Google Apps Script to create and format a wedding-planning spreadsheet.</p>
-      <a href="https://github.com/ursleeplessprogrammer/Wedding-Planner-Dashboard">
-        <img src="https://img.shields.io/badge/View_Project-238636?style=flat-square&logo=github&logoColor=white" />
-      </a>
-    </td>
-  </tr>
-</table>
 
-### 🌐 Web & Application Development
-
-<table>
-  <tr>
-    <td width="50%" valign="top">
-      <h3>🌐 Enrollment Website Project 2023–24</h3>
-      <p>Website development project focused on enrollment and registration processes.</p>
-      <a href="https://github.com/ursleeplessprogrammer/Enrollment-Website-Project-2023-24">
-        <img src="https://img.shields.io/badge/View_Project-238636?style=flat-square&logo=github&logoColor=white" />
-      </a>
-    </td>
-    <td width="50%" valign="top">
-      <h3>🚗 SeKO Car Rental Apps</h3>
-      <p>Application development project for car rental management.</p>
-      <a href="https://github.com/ursleeplessprogrammer/SeKO-Car-Rental-Apps">
-        <img src="https://img.shields.io/badge/View_Project-238636?style=flat-square&logo=github&logoColor=white" />
-      </a>
-    </td>
-  </tr>
-  <tr>
-    <td width="50%" valign="top">
-      <h3>🎨 Computer Graphics using C#</h3>
-      <p>Computer graphics implementation using C# and OpenTK.</p>
-      <a href="https://github.com/ursleeplessprogrammer/Computer-Graphics-Project-using-C-">
-        <img src="https://img.shields.io/badge/View_Project-238636?style=flat-square&logo=github&logoColor=white" />
-      </a>
-    </td>
-    <td width="50%" valign="top">
-    </td>
-  </tr>
-</table>
+<details>
+  <summary>🌐 Web & Application Development</summary>
+  <table>
+    <tr>
+      <td width="50%" valign="top">
+        <h3>🌐 Enrollment Website Project 2023–24</h3>
+        <p>Website development project focused on enrollment and registration processes.</p>
+        <a href="https://github.com/ursleeplessprogrammer/Enrollment-Website-Project-2023-24">
+          <img src="https://img.shields.io/badge/View_Project-238636?style=flat-square&logo=github&logoColor=white" />
+        </a>
+      </td>
+      <td width="50%" valign="top">
+        <h3>🚗 SeKO Car Rental Apps</h3>
+        <p>Application development project for car rental management.</p>
+        <a href="https://github.com/ursleeplessprogrammer/SeKO-Car-Rental-Apps">
+          <img src="https://img.shields.io/badge/View_Project-238636?style=flat-square&logo=github&logoColor=white" />
+        </a>
+      </td>
+    </tr>
+    <tr>
+      <td width="50%" valign="top">
+        <h3>🎨 Computer Graphics using C#</h3>
+        <p>Computer graphics implementation using C# and OpenTK.</p>
+        <a href="https://github.com/ursleeplessprogrammer/Computer-Graphics-Project-using-C-">
+          <img src="https://img.shields.io/badge/View_Project-238636?style=flat-square&logo=github&logoColor=white" />
+        </a>
+      </td>
+      <td width="50%" valign="top">
+      </td>
+    </tr>
+  </table>
+</details>
 
 ---
 
