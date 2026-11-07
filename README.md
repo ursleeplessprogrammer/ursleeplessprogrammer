@@ -200,9 +200,9 @@ A selection of projects covering artificial intelligence, machine learning, web 
     </tr>
     <tr>
       <td width="50%" valign="top">
-        <h3>⚙️ Rule-Based Expert System</h3>
-        <p>An expert system implementation exploring rule-based reasoning and decision-making.</p>
-        <a href="https://github.com/ursleeplessprogrammer/Rule-Based-Expert-System-Project">
+        <h3>🧪 AI Agent Reliability Lab</h3>
+        <p>A modular Python project that tests how reliably an AI agent works.</p>
+        <a href="https://github.com/ursleeplessprogrammer/AI-Agent-Reliability-Lab">
           <img src="https://img.shields.io/badge/View_Project-238636?style=flat-square&logo=github&logoColor=white" />
         </a>
       </td>
@@ -219,6 +219,13 @@ A selection of projects covering artificial intelligence, machine learning, web 
         <h3>🔎 Social Media Topic Scrapper</h3>
         <p>This is a Python project that analyzes social-media posts related to user-selected keywords or topics.</p>
         <a href="https://github.com/ursleeplessprogrammer/Social-Media-Topic-Scrapper">
+          <img src="https://img.shields.io/badge/View_Project-238636?style=flat-square&logo=github&logoColor=white" />
+        </a>
+      </td>
+      <td width="50%" valign="top">
+        <h3>⚙️ Rule-Based Expert System</h3>
+        <p>An expert system implementation exploring rule-based reasoning and decision-making.</p>
+        <a href="https://github.com/ursleeplessprogrammer/Rule-Based-Expert-System-Project">
           <img src="https://img.shields.io/badge/View_Project-238636?style=flat-square&logo=github&logoColor=white" />
         </a>
       </td>
