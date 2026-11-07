@@ -222,13 +222,6 @@ A selection of projects covering artificial intelligence, machine learning, web 
           <img src="https://img.shields.io/badge/View_Project-238636?style=flat-square&logo=github&logoColor=white" />
         </a>
       </td>
-      <td width="50%" valign="top">
-        <h3>💍 Wedding Planner Dashboard</h3>
-        <p>This project utilizes Google Apps Script to create and format a wedding-planning spreadsheet.</p>
-        <a href="https://github.com/ursleeplessprogrammer/Wedding-Planner-Dashboard">
-          <img src="https://img.shields.io/badge/View_Project-238636?style=flat-square&logo=github&logoColor=white" />
-        </a>
-      </td>
     </tr>
   </table>
   
@@ -263,6 +256,13 @@ A selection of projects covering artificial intelligence, machine learning, web 
         </a>
       </td>
       <td width="50%" valign="top">
+      </td>
+      <td width="50%" valign="top">
+        <h3>💍 Wedding Planner Dashboard</h3>
+        <p>This project utilizes Google Apps Script to create and format a wedding-planning spreadsheet.</p>
+        <a href="https://github.com/ursleeplessprogrammer/Wedding-Planner-Dashboard">
+          <img src="https://img.shields.io/badge/View_Project-238636?style=flat-square&logo=github&logoColor=white" />
+        </a>
       </td>
     </tr>
   </table>
