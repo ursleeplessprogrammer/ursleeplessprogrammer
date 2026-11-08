@@ -27,6 +27,11 @@
   />
 </p>
 
+<p align="center">
+  <img src="https://github-readme-stats-eight-theta.vercel.app/api?username=ursleeplessprogrammer&show_icons=true&theme=omni&include_all_commits=true&count_private=true" height="180em"/>
+  <img src="https://github-readme-stats-eight-theta.vercel.app/api/top-langs/?username=ursleeplessprogrammer&layout=compact&langs_count=8&theme=omni" height="180em"/>
+</p>
+
 ---
 
 ## About Me
