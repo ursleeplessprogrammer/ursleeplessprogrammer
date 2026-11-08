@@ -1,23 +1,7 @@
 # Hi, I'm ursleeplessprogrammer 👋
 
 <p align="center">
-  <svg width="170" height="170" viewBox="0 0 170 170" role="img" aria-label="GitHub profile picture">
-    <defs>
-      <clipPath id="avatar-circle">
-        <circle cx="85" cy="85" r="75" />
-      </clipPath>
-    </defs>
-    <circle cx="85" cy="85" r="82" fill="#39d353" />
-    <image
-      href="https://github.com/ursleeplessprogrammer.png"
-      x="10"
-      y="10"
-      width="150"
-      height="150"
-      clip-path="url(#avatar-circle)"
-      preserveAspectRatio="xMidYMid slice"
-    />
-  </svg>
+  <img src="./profile/avatar.svg" width="170" alt="GitHub profile picture">
 </p>
 
 ---
