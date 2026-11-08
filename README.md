@@ -41,7 +41,7 @@ I enjoy experimenting with new ideas, developing applications, and documenting w
 
 ## Tech Stack
 
-  <details> 
+  <details open> 
     <summary>👨‍💻 Programming and Markup Languages</summary>
     <p>
       <img src="https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white" />
@@ -60,7 +60,7 @@ I enjoy experimenting with new ideas, developing applications, and documenting w
   </details>
 
 
-  <details>
+  <details open>
     <summary>🧰 Frameworks and Libraries</summary>
       <p>
         <img src="https://img.shields.io/badge/TensorFlow-FF6F00?style=flat-square&logo=tensorflow&logoColor=white" />
@@ -81,7 +81,7 @@ I enjoy experimenting with new ideas, developing applications, and documenting w
     </p>
   </details>
 
- <details>
+ <details open>
    <summary>🗄️Databases and Cloud Hosting</summary>
     <p>
       <img src="https://img.shields.io/badge/Notion-000000?style=flat-square&logo=notion&logoColor=white" alt="Notion" />
@@ -94,7 +94,7 @@ I enjoy experimenting with new ideas, developing applications, and documenting w
     </p>
  </details>
 
-  <details>
+  <details open>
     <summary>💻 AI & Machine Learning</summary>
     <p>
       <img src="https://img.shields.io/badge/Anthropic-191919?style=flat-square&logo=anthropic&logoColor=white" alt="Anthropic" />
@@ -105,7 +105,7 @@ I enjoy experimenting with new ideas, developing applications, and documenting w
   </details>
   
 
-  <details>
+  <details open>
     <summary>🛠️ Tools, Platforms & IDE's</summary>
       <p>
       <img src="https://img.shields.io/badge/VS_Code-007ACC?style=flat-square&logo=visualstudiocode&logoColor=white" alt="Visual Studio Code" />
