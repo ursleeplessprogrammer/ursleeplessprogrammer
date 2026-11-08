@@ -34,16 +34,6 @@
 
 ---
 
-## About Me
-
-I'm an IT professional with an Informatics background and a strong interest in **Artificial Intelligence, Machine Learning, and Software Development**.
-
-Currently working as an **IT Specialist at PT Bank Central Asia Tbk (BCA)**, while continuing to explore emerging technologies and build practical solutions through personal projects.
-
-I enjoy experimenting with new ideas, developing applications, and documenting what I learn along the way. This GitHub profile serves as a collection of my projects, experiments, and technical knowledge.
-
----
-
 ## Tech Stack
 
   <details open> 
