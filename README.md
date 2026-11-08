@@ -333,8 +333,7 @@ A growing collection of technical documentation, guides, and personal notes base
 
   <br/><br/>
 
-  *Building, learning, and improving — one project at a time.*
-
-  **Thanks for stopping by!** 👋
+  *They may recreate the shape of what I make, but the soul that gave it form remains my own.*
+  — ursleeplessprogrammer
 
 </div>
