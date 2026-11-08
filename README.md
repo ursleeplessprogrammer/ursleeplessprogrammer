@@ -33,7 +33,6 @@
 </p>
 
 ---
-<br>
 
 ## Tech Stack
 
