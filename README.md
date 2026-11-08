@@ -332,7 +332,7 @@ A growing collection of technical documentation, guides, and personal notes base
   </a>
 
   *They may recreate the shape of what I make, but the soul that gave it form remains my own.*
-  — ursleeplessprogrammer
+
 ---
 
 </div>
