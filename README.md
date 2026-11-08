@@ -1,19 +1,24 @@
 # Hi, I'm ursleeplessprogrammer 👋
 
 <p align="center">
-  <img
-    src="https://github.com/ursleeplessprogrammer.png"
-    width="150"
-    alt="GitHub profile picture"
-    style="border-radius: 50%;"
-  />
+  <svg width="170" height="170" viewBox="0 0 170 170" role="img" aria-label="GitHub profile picture">
+    <defs>
+      <clipPath id="avatar-circle">
+        <circle cx="85" cy="85" r="75" />
+      </clipPath>
+    </defs>
+    <circle cx="85" cy="85" r="82" fill="#39d353" />
+    <image
+      href="https://github.com/ursleeplessprogrammer.png"
+      x="10"
+      y="10"
+      width="150"
+      height="150"
+      clip-path="url(#avatar-circle)"
+      preserveAspectRatio="xMidYMid slice"
+    />
+  </svg>
 </p>
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ursleeplessprogrammer/ursleeplessprogrammer/main/profile/dark_mode.svg">
-  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/ursleeplessprogrammer/ursleeplessprogrammer/main/profile/light_mode.svg">
-  <img alt="Your name and profile banner" src="https://raw.githubusercontent.com/ursleeplessprogrammer/ursleeplessprogrammer/main/profile/light_mode.svg" width="100%">
-</picture>
 
 ---
 
