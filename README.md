@@ -1,5 +1,22 @@
 # Hi, I'm ursleeplessprogrammer 👋
 
+<p align="center">
+  <img
+    src="https://github.com/ursleeplessprogrammer.png"
+    width="150"
+    alt="GitHub profile picture"
+    style="border-radius: 50%;"
+  />
+</p>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ursleeplessprogrammer/ursleeplessprogrammer/main/profile/dark_mode.svg">
+  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/ursleeplessprogrammer/ursleeplessprogrammer/main/profile/light_mode.svg">
+  <img alt="Your name and profile banner" src="https://raw.githubusercontent.com/ursleeplessprogrammer/ursleeplessprogrammer/main/profile/light_mode.svg" width="100%">
+</picture>
+
+---
+
 <div align="center">
 
   <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=500&size=20&duration=3000&pause=1000&color=58A6FF&center=true&vCenter=true&width=550&lines=IT+Professional+%7C+Software+Developer;AI+%26+Machine+Learning+Enthusiast;Always+Learning%2C+Rarely+Sleeping." alt="Typing SVG" />
