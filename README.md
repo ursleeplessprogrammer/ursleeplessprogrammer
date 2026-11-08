@@ -331,9 +331,8 @@ A growing collection of technical documentation, guides, and personal notes base
     <img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white" />
   </a>
 
-  <br/><br/>
-
   *They may recreate the shape of what I make, but the soul that gave it form remains my own.*
   — ursleeplessprogrammer
 ---
+
 </div>
