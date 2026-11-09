@@ -1,5 +1,3 @@
-# Hi, I'm ursleeplessprogrammer 👋
-
 <p align="center">
   <img
     src="https://raw.githubusercontent.com/ursleeplessprogrammer/ursleeplessprogrammer/main/assets/portrait.svg"
