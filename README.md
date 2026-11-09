@@ -5,7 +5,12 @@
     src="assets/portrait.svg"
     alt="Animated ASCII Portrait"
     width="100%"
-    style="max-width: 1000px; height: auto;"
+    style="
+      max-width: 1000px;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    "
   />
 </div>
 
