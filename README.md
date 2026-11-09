@@ -14,14 +14,6 @@
 
 
   *They may recreate the shape of what I make, but the soul that gave it form remains my own.*
-  
-
-  <br/>
-
-  <a href="https://github.com/ursleeplessprogrammer">
-    <img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white" />
-  </a>
-  <img src="https://komarev.com/ghpvc/?username=ursleeplessprogrammer&style=for-the-badge&color=0e75b6&label=PROFILE+VIEWS" />
 
 </div>
 
@@ -334,11 +326,8 @@ A growing collection of technical documentation, guides, and personal notes base
 ## Let's Connect
 
 <div align="center">
-
   <a href="https://github.com/ursleeplessprogrammer">
     <img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white" />
   </a>
-
----
-
+  <img src="https://komarev.com/ghpvc/?username=ursleeplessprogrammer&style=for-the-badge&color=0e75b6&label=PROFILE+VIEWS" />
 </div>
