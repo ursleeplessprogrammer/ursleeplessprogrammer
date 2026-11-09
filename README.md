@@ -37,7 +37,7 @@
     alt="GitHub Stats"
   />
   <img
-    src="https://github-readme-stats-eight-theta.vercel.app/api/top-langs/?username=ursleeplessprogrammer&layout=compact&langs_count=8&bg_color=000000&title_color=39d353&text_color=c9d1d9"
+    src="https://github-readme-stats-eight-theta.vercel.app/api/top-langs/?username=ursleeplessprogrammer&layout=compact&langs_count=10&bg_color=000000&title_color=39d353&text_color=c9d1d9&card_width=400"
     width="49%"
     height="180"
     alt="Top Languages"
