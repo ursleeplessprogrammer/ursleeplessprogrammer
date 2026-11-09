@@ -83,6 +83,199 @@ def resize_image(image, width):
     )
 
 
+def generate_gif(
+    rows,
+    output_path,
+    font_size=12,
+    foreground="#c9d1d9",
+    background="#0d1117",
+    frame_duration=80
+):
+    """
+    Generate an animated terminal-style ASCII portrait GIF.
+
+    Each frame progressively reveals another line of ASCII art.
+    Uses Pillow only.
+    """
+
+    from PIL import Image, ImageDraw, ImageFont
+
+    output_path = Path(output_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    # Load a monospace font
+    try:
+        font = ImageFont.truetype("consola.ttf", font_size)
+    except OSError:
+        try:
+            font = ImageFont.truetype(
+                "C:/Windows/Fonts/consola.ttf",
+                font_size
+            )
+        except OSError:
+            font = ImageFont.load_default()
+
+    # Measure character dimensions
+    char_width = font.getlength("M")
+    char_height = font_size * 1.4
+
+    columns = max(len(row) for row in rows)
+    line_count = len(rows)
+
+    padding = 24
+    header_height = 55
+    footer_height = 45
+
+    content_width = int(columns * char_width)
+
+    width = content_width + padding * 2
+    height = int(
+        header_height
+        + line_count * char_height
+        + footer_height
+        + padding
+    )
+
+    frames = []
+
+    # Colors
+    fg = foreground
+    bg = background
+
+    # Terminal header
+    header_text = "portrait@github: ~$ ./portrait.sh"
+    footer_text = "portrait@github:~$ portrait generated"
+
+    # Create one frame for every progressively revealed line
+    for visible_lines in range(1, line_count + 1):
+
+        frame = Image.new("RGB", (width, height), bg)
+        draw = ImageDraw.Draw(frame)
+
+        # Terminal border
+        draw.rounded_rectangle(
+            (0, 0, width - 1, height - 1),
+            radius=10,
+            outline="#30363d",
+            width=1
+        )
+
+        # Terminal controls
+        draw.ellipse((18, 15, 28, 25), fill="#ff5f56")
+        draw.ellipse((36, 15, 46, 25), fill="#ffbd2e")
+        draw.ellipse((54, 15, 64, 25), fill="#27c93f")
+
+        # Header
+        draw.text(
+            (80, 13),
+            header_text,
+            font=font,
+            fill="#8b949e"
+        )
+
+        # Header separator
+        draw.line(
+            (0, header_height - 5, width, header_height - 5),
+            fill="#30363d",
+            width=1
+        )
+
+        # ASCII portrait
+        for index in range(visible_lines):
+
+            y = (
+                header_height
+                + index * char_height
+            )
+
+            draw.text(
+                (padding, y),
+                rows[index],
+                font=font,
+                fill=fg
+            )
+
+        # Moving cursor at the end of the current line
+        current_row = rows[visible_lines - 1]
+
+        cursor_x = (
+            padding
+            + int(len(current_row) * char_width)
+        )
+
+        cursor_y = (
+            header_height
+            + (visible_lines - 1) * char_height
+        )
+
+        draw.rectangle(
+            (
+                cursor_x,
+                cursor_y,
+                cursor_x + max(2, int(char_width)),
+                cursor_y + font_size
+            ),
+            fill=fg
+        )
+
+        frames.append(frame)
+
+    # Final terminal frame
+    final_frame = frames[-1].copy()
+    draw = ImageDraw.Draw(final_frame)
+
+    footer_y = height - footer_height
+
+    draw.text(
+        (padding, footer_y),
+        footer_text,
+        font=font,
+        fill="#8b949e"
+    )
+
+    frames.append(final_frame)
+
+    # Blinking cursor frames
+    cursor_x = (
+        padding
+        + int(font.getlength(footer_text))
+        + 3
+    )
+
+    for visible in [True, False, True, False]:
+
+        blink_frame = final_frame.copy()
+        draw = ImageDraw.Draw(blink_frame)
+
+        if visible:
+            draw.rectangle(
+                (
+                    cursor_x,
+                    footer_y,
+                    cursor_x + max(2, int(char_width)),
+                    footer_y + font_size
+                ),
+                fill=fg
+            )
+
+        frames.append(blink_frame)
+
+    # Save animated GIF
+    frames[0].save(
+        output_path,
+        save_all=True,
+        append_images=frames[1:],
+        duration=frame_duration,
+        loop=0,
+        optimize=True,
+        disposal=2
+    )
+
+    print(f"[SUCCESS] Animated GIF saved: {output_path}")
+    print(f"[INFO] Dimensions: {width} x {height}")
+    print(f"[INFO] Frames: {len(frames)}")
+
+
 def adjust_image(image, contrast=1.0, brightness=1.0):
     """
     Adjust image contrast and brightness.
@@ -651,6 +844,15 @@ def main():
         animation_speed=args.animation_speed,
         reveal_duration=args.reveal_duration
     )
+
+    generate_gif(
+    rows=rows,
+    output_path="assets/portrait_animated.gif",
+    font_size=args.font_size,
+    foreground=args.foreground,
+    background=args.background,
+    frame_duration=80
+)
 
 
 if __name__ == "__main__":
