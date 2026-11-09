@@ -1,18 +1,12 @@
 # Hi, I'm ursleeplessprogrammer 👋
 
-<div align="center">
+<p align="center">
   <img
-    src="assets/portrait.svg"
+    src="https://raw.githubusercontent.com/ursleeplessprogrammer/ursleeplessprogrammer/main/assets/portrait.svg"
     alt="Animated ASCII Portrait"
-    width="100%"
-    style="
-      max-width: 1000px;
-      height: auto;
-      display: block;
-      margin: 0 auto;
-    "
+    width="950"
   />
-</div>
+</p>
 
 <div align="center">
 
