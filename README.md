@@ -2,10 +2,10 @@
 
 <div align="center">
   <img
-    src="assets/portrait_animated.gif"
+    src="assets/portrait.svg"
     alt="Animated ASCII Portrait"
-    height="400"
-    style="width: auto; max-width: 100%; display: block;"
+    width="100%"
+    style="max-width: 1000px; height: auto;"
   />
 </div>
 
