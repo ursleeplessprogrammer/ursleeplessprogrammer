@@ -33,11 +33,13 @@
   <img
     src="https://github-readme-stats-eight-theta.vercel.app/api?username=ursleeplessprogrammer&show_icons=true&include_all_commits=true&count_private=true&bg_color=000000&title_color=39d353&text_color=c9d1d9&icon_color=39d353&ring_color=39d353"
     width="49%"
+    height="180"
     alt="GitHub Stats"
   />
   <img
     src="https://github-readme-stats-eight-theta.vercel.app/api/top-langs/?username=ursleeplessprogrammer&layout=compact&langs_count=8&bg_color=000000&title_color=39d353&text_color=c9d1d9"
     width="49%"
+    height="180"
     alt="Top Languages"
   />
 </p>
