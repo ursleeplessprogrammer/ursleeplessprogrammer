@@ -3,7 +3,7 @@
 <p align="center">
   <img
     src="assets/portrait.svg"
-    width="400"
+    width="800"
     alt="ASCII Portrait"
   />
 </p>
