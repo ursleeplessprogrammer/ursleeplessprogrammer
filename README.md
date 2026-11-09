@@ -235,9 +235,9 @@ A selection of projects covering artificial intelligence, machine learning, web 
   <table>
     <tr>
       <td width="50%" valign="top">
-        <h3>🌐 Enrollment Website Project 2023–24</h3>
-        <p>Website development project focused on enrollment and registration processes.</p>
-        <a href="https://github.com/ursleeplessprogrammer/Enrollment-Website-Project-2023-24">
+        <h3>🎬 MovieBarengGan (MBG)</h3>
+        <p>A movie discovery and streaming platform built to make finding your next favorite movie or TV show easier.</p>
+        <a href="https://github.com/ursleeplessprogrammer/MovieBarengGan">
           <img src="https://img.shields.io/badge/View_Project-238636?style=flat-square&logo=github&logoColor=white" />
         </a>
       </td>
@@ -257,6 +257,15 @@ A selection of projects covering artificial intelligence, machine learning, web 
           <img src="https://img.shields.io/badge/View_Project-238636?style=flat-square&logo=github&logoColor=white" />
         </a>
       </td>
+      <td width="50%" valign="top">
+        <h3>🌐 Enrollment Website Project 2023–24</h3>
+        <p>Website development project focused on enrollment and registration processes.</p>
+        <a href="https://github.com/ursleeplessprogrammer/Enrollment-Website-Project-2023-24">
+          <img src="https://img.shields.io/badge/View_Project-238636?style=flat-square&logo=github&logoColor=white" />
+        </a>
+      </td>
+    </tr>
+    <tr>
       <td width="50%" valign="top">
         <h3>💍 Wedding Planner Dashboard</h3>
         <p>This project utilizes Google Apps Script to create and format a wedding-planning spreadsheet.</p>
