@@ -2,11 +2,12 @@
 
 <div align="center">
   <img
-    src="https://raw.githubusercontent.com/ursleeplessprogrammer/ursleeplessprogrammer/main/assets/portrait.svg"
-    width="100%"
-    alt="Animated ASCII Portrait"
+    src="assets/portrait.svg"
+    width="1200"
+    alt="ASCII Portrait"
   />
 </div>
+<div align="center">
 
   <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=500&size=20&duration=3000&pause=1000&color=58A6FF&center=true&vCenter=true&width=550&lines=IT+Professional+%7C+Software+Developer;AI+%26+Machine+Learning+Enthusiast;Always+Learning%2C+Rarely+Sleeping." alt="Typing SVG" />
 
