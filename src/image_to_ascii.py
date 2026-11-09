@@ -1,41 +1,81 @@
 
-from PIL import Image, ImageOps, ImageEnhance
 import argparse
 import html
 from pathlib import Path
 
+from PIL import Image, ImageEnhance, ImageOps
 
-# Dark characters represent darker pixels.
-# Light characters represent brighter pixels.
-ASCII_CHARS = (
-    "@%#*+=-:. "
-)
 
+# ============================================================
+# CONFIGURATION
+# ============================================================
+
+ASCII_CHARS = "@%#*+=-:. "
+
+DEFAULT_FOREGROUND = "#c9d1d9"
+DEFAULT_BACKGROUND = "#0d1117"
+
+DEFAULT_FONT_SIZE = 8
+DEFAULT_IMAGE_WIDTH = 250
+
+# Controls the terminal animation
+DEFAULT_ANIMATION_SPEED = 0.065
+DEFAULT_REVEAL_DURATION = 0.12
+
+# Monospace character width-to-height ratio.
+# This compensates for characters being taller than they are wide.
+CHAR_ASPECT_RATIO = 0.55
+
+
+# ============================================================
+# IMAGE PROCESSING
+# ============================================================
 
 def load_image(image_path):
-    """Load the original image without modifying its source file."""
+    """
+    Load an image, correct its EXIF orientation,
+    and convert it to RGB.
+    """
+
+    image_path = Path(image_path)
+
+    if not image_path.exists():
+        raise FileNotFoundError(
+            f"Image not found: {image_path}"
+        )
+
     image = Image.open(image_path)
+
     image = ImageOps.exif_transpose(image)
-    return image.convert("RGB")
+    image = image.convert("RGB")
+
+    return image
 
 
-def resize_image(image, width, char_aspect=0.55):
+def resize_image(image, width):
     """
-    Resize proportionally while accounting for the rectangular
-    shape of monospace characters.
+    Resize the image while preserving its visual aspect ratio
+    for monospace ASCII characters.
 
-    char_aspect:
-        Approximate character width / character height.
-        Adjust this if the rendered portrait looks too tall or wide.
+    Automatically compensates for character width and height.
     """
+
     original_width, original_height = image.size
 
+    # Approximate monospace character dimensions
+    char_width = 0.60
+    char_height = 1.25
+
+    character_ratio = char_width / char_height
+
+    # Calculate output height using character proportions
     aspect_ratio = original_height / original_width
 
-    height = max(
-        1,
-        round(width * aspect_ratio * char_aspect)
+    height = round(
+        width * aspect_ratio * character_ratio
     )
+
+    height = max(1, height)
 
     return image.resize(
         (width, height),
@@ -43,180 +83,573 @@ def resize_image(image, width, char_aspect=0.55):
     )
 
 
-def convert_to_ascii(image, width=180, char_aspect=0.55,
-                     contrast=1.0, brightness=1.0):
-    """Convert an image into ASCII characters."""
+def adjust_image(image, contrast=1.0, brightness=1.0):
+    """
+    Adjust image contrast and brightness.
 
-    image = resize_image(image, width, char_aspect)
+    Defaults preserve the original image brightness and contrast.
+    """
 
-    # Convert to grayscale.
-    grayscale = ImageOps.grayscale(image)
-
-    # Keep enhancements neutral by default.
     if contrast != 1.0:
-        grayscale = ImageEnhance.Contrast(grayscale).enhance(contrast)
+        image = ImageEnhance.Contrast(image).enhance(contrast)
 
     if brightness != 1.0:
-        grayscale = ImageEnhance.Brightness(grayscale).enhance(brightness)
+        image = ImageEnhance.Brightness(image).enhance(brightness)
 
-    pixels = list(grayscale.getdata())
+    return image
 
-    ascii_chars = []
+
+# ============================================================
+# ASCII CONVERSION
+# ============================================================
+
+def convert_to_ascii(image):
+    """
+    Convert an RGB image into ASCII characters.
+
+    Dark pixels use dense characters.
+    Bright pixels use lighter characters.
+
+    The original image composition is preserved.
+    No background removal is performed.
+    """
+
+    grayscale = image.convert("L")
+
+    pixels = grayscale.getdata()
+
+    characters = []
+
+    total_chars = len(ASCII_CHARS)
 
     for pixel in pixels:
-        index = round(
-            pixel / 255 * (len(ASCII_CHARS) - 1)
+        index = int(
+            pixel / 255 * (total_chars - 1)
         )
 
-        ascii_chars.append(ASCII_CHARS[index])
+        characters.append(ASCII_CHARS[index])
 
-    # Reconstruct the character rows.
+    width, height = grayscale.size
+
     rows = []
 
-    for y in range(image.height):
-        start = y * image.width
-        end = start + image.width
+    for y in range(height):
+        start = y * width
+        end = start + width
 
-        rows.append("".join(ascii_chars[start:end]))
+        row = "".join(characters[start:end])
+
+        rows.append(row)
 
     return rows
 
 
-def generate_svg(rows, output_path, font_size=8,
-                 foreground="#c9d1d9", background=None):
-    """Generate an SVG image from ASCII rows."""
+# ============================================================
+# SVG ANIMATION GENERATOR
+# ============================================================
+
+def generate_svg(
+    rows,
+    output_path,
+    font_size=DEFAULT_FONT_SIZE,
+    foreground=DEFAULT_FOREGROUND,
+    background=DEFAULT_BACKGROUND,
+    animation_speed=DEFAULT_ANIMATION_SPEED,
+    reveal_duration=DEFAULT_REVEAL_DURATION
+):
+    """
+    Generate an animated terminal-style SVG.
+
+    Animation sequence:
+    1. ASCII lines appear one by one.
+    2. A cursor follows each line while it is revealed.
+    3. The terminal footer appears after the portrait.
+    4. The final terminal cursor blinks continuously.
+
+    Uses SVG SMIL animation.
+    """
+
+    output_path = Path(output_path)
+
+    output_path.parent.mkdir(
+        parents=True,
+        exist_ok=True
+    )
+
+    if not rows:
+        raise ValueError("No ASCII rows were generated.")
+
+    # --------------------------------------------------------
+    # Dimensions
+    # --------------------------------------------------------
 
     columns = max(len(row) for row in rows)
 
-    # Monospace characters are approximately 0.6 times
-    # the font size in width.
-    char_width = font_size * 0.6
+    # Approximate monospace character dimensions
+    char_width = font_size * 0.60
+    char_height = font_size * 1.25
 
-    svg_width = columns * char_width
-    svg_height = len(rows) * font_size
+    padding_x = 24
+    padding_top = 70
+    padding_bottom = 45
 
-    svg = [
-        '<?xml version="1.0" encoding="UTF-8"?>',
-        (
-            f'<svg xmlns="http://www.w3.org/2000/svg" '
-            f'width="{svg_width}" height="{svg_height}" '
-            f'viewBox="0 0 {svg_width} {svg_height}">'
-        )
-    ]
+    header_height = 38
+    footer_height = 35
 
-    if background:
-        svg.append(
-            f'<rect width="100%" height="100%" '
-            f'fill="{background}"/>'
-        )
+    content_width = columns * char_width
 
-    svg.append(
-        f'<g fill="{foreground}" '
-        f'font-family="Consolas, Courier New, monospace" '
-        f'font-size="{font_size}" '
-        f'font-weight="normal" '
-        f'xml:space="preserve">'
+    svg_width = int(
+        content_width + (padding_x * 2)
     )
 
-    for index, row in enumerate(rows):
-        y = (index + 1) * font_size
+    content_height = len(rows) * char_height
 
-        svg.append(
-            f'<text x="0" y="{y}">{html.escape(row)}</text>'
+    svg_height = int(
+        padding_top
+        + content_height
+        + padding_bottom
+    )
+
+    text_x = padding_x
+
+    first_line_y = padding_top
+
+    # Total animation duration
+    total_animation_duration = (
+        len(rows) * animation_speed
+        + reveal_duration
+    )
+
+    # --------------------------------------------------------
+    # SVG initialization
+    # --------------------------------------------------------
+
+    svg = []
+
+    svg.append(
+        f'<svg xmlns="http://www.w3.org/2000/svg" '
+        f'xmlns:xlink="http://www.w3.org/1999/xlink" '
+        f'width="{svg_width}" '
+        f'height="{svg_height}" '
+        f'viewBox="0 0 {svg_width} {svg_height}">'
+    )
+
+    svg.append("<defs>")
+
+    # --------------------------------------------------------
+    # Animation definitions
+    # --------------------------------------------------------
+
+    # Cursor blinking animation
+    svg.append("""
+        <style>
+            .terminal-text {
+                font-family: Consolas, "Courier New", monospace;
+                font-weight: 400;
+            }
+
+            .terminal-header {
+                font-family: Consolas, "Courier New", monospace;
+                font-size: 12px;
+            }
+
+            .terminal-footer {
+                font-family: Consolas, "Courier New", monospace;
+                font-size: 11px;
+            }
+        </style>
+    """)
+
+    svg.append("</defs>")
+
+    # --------------------------------------------------------
+    # Background
+    # --------------------------------------------------------
+
+    svg.append(
+        f'<rect x="0" y="0" '
+        f'width="{svg_width}" height="{svg_height}" '
+        f'rx="10" ry="10" '
+        f'fill="{html.escape(background, quote=True)}"/>'
+    )
+
+    # --------------------------------------------------------
+    # Terminal window border
+    # --------------------------------------------------------
+
+    svg.append(
+        f'<rect x="0.5" y="0.5" '
+        f'width="{svg_width - 1}" '
+        f'height="{svg_height - 1}" '
+        f'rx="10" ry="10" '
+        f'fill="none" '
+        f'stroke="#30363d" '
+        f'stroke-width="1"/>'
+    )
+
+    # --------------------------------------------------------
+    # Terminal header
+    # --------------------------------------------------------
+
+    svg.append(
+        '<circle cx="20" cy="20" r="5" fill="#ff5f56"/>'
+    )
+
+    svg.append(
+        '<circle cx="38" cy="20" r="5" fill="#ffbd2e"/>'
+    )
+
+    svg.append(
+        '<circle cx="56" cy="20" r="5" fill="#27c93f"/>'
+    )
+
+    header_text = "portrait@github: ~$ ./portrait.sh"
+
+    svg.append(
+        f'<text x="{padding_x + 55}" y="24" '
+        f'class="terminal-header" '
+        f'fill="#8b949e">'
+        f'{html.escape(header_text)}'
+        f'</text>'
+    )
+
+    # Header separator
+    svg.append(
+        f'<line x1="0" y1="{header_height}" '
+        f'x2="{svg_width}" y2="{header_height}" '
+        f'stroke="#30363d" stroke-width="1"/>'
+    )
+
+    # --------------------------------------------------------
+    # ASCII rows
+    # --------------------------------------------------------
+
+    for index, row in enumerate(rows):
+
+        y_position = (
+            first_line_y
+            + index * char_height
         )
 
-    svg.extend([
-        '</g>',
-        '</svg>'
-    ])
+        animation_begin = (
+            index * animation_speed
+        )
 
-    output_path = Path(output_path)
-    output_path.parent.mkdir(parents=True, exist_ok=True)
+        clip_id = f"line-clip-{index}"
+        cursor_id = f"line-cursor-{index}"
+
+        # Escape special XML characters
+        safe_row = html.escape(row)
+
+        # ----------------------------------------------------
+        # Clip path for progressive text reveal
+        # ----------------------------------------------------
+
+        svg.append(
+            f'<clipPath id="{clip_id}">'
+            f'<rect x="{text_x}" '
+            f'y="{y_position - font_size}" '
+            f'width="0" '
+            f'height="{char_height + 2}">'
+            f'<animate '
+            f'attributeName="width" '
+            f'from="0" '
+            f'to="{content_width}" '
+            f'begin="{animation_begin:.3f}s" '
+            f'dur="{reveal_duration:.3f}s" '
+            f'fill="freeze" '
+            f'calcMode="linear"/>'
+            f'</rect>'
+            f'</clipPath>'
+        )
+
+        # ----------------------------------------------------
+        # ASCII text
+        # ----------------------------------------------------
+
+        svg.append(
+            f'<text x="{text_x}" '
+            f'y="{y_position}" '
+            f'class="terminal-text" '
+            f'font-size="{font_size}" '
+            f'fill="{html.escape(foreground, quote=True)}" '
+            f'xml:space="preserve" '
+            f'clip-path="url(#{clip_id})">'
+            f'{safe_row}'
+            f'</text>'
+        )
+
+        # ----------------------------------------------------
+        # Moving cursor
+        # ----------------------------------------------------
+
+        cursor_y = y_position - font_size + 1
+
+        svg.append(
+            f'<rect id="{cursor_id}" '
+            f'x="{text_x}" '
+            f'y="{cursor_y}" '
+            f'width="{max(1, font_size * 0.6)}" '
+            f'height="{font_size + 2}" '
+            f'fill="{html.escape(foreground, quote=True)}" '
+            f'opacity="0">'
+        )
+
+        # Cursor moves from left to right
+        svg.append(
+            f'<animate '
+            f'attributeName="x" '
+            f'from="{text_x}" '
+            f'to="{text_x + content_width}" '
+            f'begin="{animation_begin:.3f}s" '
+            f'dur="{reveal_duration:.3f}s" '
+            f'fill="freeze"/>'
+        )
+
+        # Cursor appears during the reveal and disappears afterward
+        svg.append(
+            f'<animate '
+            f'attributeName="opacity" '
+            f'values="0;1;1;0" '
+            f'keyTimes="0;0.01;0.90;1" '
+            f'begin="{animation_begin:.3f}s" '
+            f'dur="{reveal_duration:.3f}s" '
+            f'fill="freeze"/>'
+        )
+
+        svg.append("</rect>")
+
+    # --------------------------------------------------------
+    # Terminal footer
+    # --------------------------------------------------------
+
+    footer_y = (
+        first_line_y
+        + content_height
+        + 24
+    )
+
+    footer_text = "portrait@github:~$ portrait generated"
+
+    footer_start = (
+        total_animation_duration + 0.1
+    )
+
+    svg.append(
+        f'<text x="{padding_x}" '
+        f'y="{footer_y}" '
+        f'class="terminal-footer" '
+        f'fill="#8b949e" '
+        f'opacity="0">'
+        f'{html.escape(footer_text)}'
+        f'<set attributeName="opacity" '
+        f'to="1" '
+        f'begin="{footer_start:.3f}s" '
+        f'fill="freeze"/>'
+        f'</text>'
+    )
+
+    # --------------------------------------------------------
+    # Blinking footer cursor
+    # --------------------------------------------------------
+
+    footer_cursor_x = (
+        padding_x
+        + len(footer_text) * 6.6
+    )
+
+    svg.append(
+        f'<rect x="{footer_cursor_x}" '
+        f'y="{footer_y - 10}" '
+        f'width="7" height="12" '
+        f'fill="{html.escape(foreground, quote=True)}" '
+        f'opacity="0">'
+        f'<set attributeName="opacity" '
+        f'to="1" '
+        f'begin="{footer_start:.3f}s" '
+        f'fill="freeze"/>'
+        f'<animate attributeName="opacity" '
+        f'values="1;0;1" '
+        f'dur="0.9s" '
+        f'begin="{footer_start:.3f}s" '
+        f'repeatCount="indefinite"/>'
+        f'</rect>'
+    )
+
+    # --------------------------------------------------------
+    # Close SVG
+    # --------------------------------------------------------
+
+    svg.append("</svg>")
+
+    # --------------------------------------------------------
+    # Save file
+    # --------------------------------------------------------
 
     output_path.write_text(
         "\n".join(svg),
         encoding="utf-8"
     )
 
-    print(f"ASCII SVG saved to: {output_path}")
+    print(f"[SUCCESS] Animated SVG saved: {output_path}")
+    print(f"[INFO] Image width: {columns} characters")
+    print(f"[INFO] Image height: {len(rows)} lines")
+    print(
+        f"[INFO] Animation duration: "
+        f"approximately {total_animation_duration:.2f} seconds"
+    )
 
+
+# ============================================================
+# MAIN
+# ============================================================
 
 def main():
+
     parser = argparse.ArgumentParser(
-        description="Convert an image into an ASCII SVG portrait."
+        description=(
+            "Convert an image into an animated "
+            "terminal-style ASCII SVG portrait."
+        )
     )
 
-    parser.add_argument("input", help="Input image path")
-
+    # Input / output
     parser.add_argument(
-        "-o", "--output",
-        default="assets/portrait.svg"
+        "image",
+        help="Path to the input image."
     )
 
     parser.add_argument(
-        "-w", "--width",
+        "-o",
+        "--output",
+        default="assets/portrait_animated.svg",
+        help="Output SVG path."
+    )
+
+    # Image settings
+    parser.add_argument(
+        "-w",
+        "--width",
         type=int,
-        default=180
-    )
-
-    parser.add_argument(
-        "--char-aspect",
-        type=float,
-        default=0.55
-    )
-
-    parser.add_argument(
-        "--font-size",
-        type=int,
-        default=8
+        default=DEFAULT_IMAGE_WIDTH,
+        help="ASCII image width in characters."
     )
 
     parser.add_argument(
         "--contrast",
         type=float,
-        default=1.0
+        default=1.0,
+        help="Image contrast multiplier."
     )
 
     parser.add_argument(
         "--brightness",
         type=float,
-        default=1.0
+        default=1.0,
+        help="Image brightness multiplier."
+    )
+
+    # SVG settings
+    parser.add_argument(
+        "--font-size",
+        type=int,
+        default=DEFAULT_FONT_SIZE,
+        help="SVG monospace font size."
     )
 
     parser.add_argument(
         "--foreground",
-        default="#c9d1d9"
+        default=DEFAULT_FOREGROUND,
+        help="ASCII foreground color."
     )
 
     parser.add_argument(
         "--background",
-        default=None
+        default=DEFAULT_BACKGROUND,
+        help="Terminal background color."
+    )
+
+    # Animation settings
+    parser.add_argument(
+        "--animation-speed",
+        type=float,
+        default=DEFAULT_ANIMATION_SPEED,
+        help="Delay between the start of each line animation."
+    )
+
+    parser.add_argument(
+        "--reveal-duration",
+        type=float,
+        default=DEFAULT_REVEAL_DURATION,
+        help="Duration of each line reveal."
     )
 
     args = parser.parse_args()
 
-    if args.width <= 0 or args.font_size <= 0:
-        parser.error("Width and font size must be positive.")
+    # --------------------------------------------------------
+    # Validate arguments
+    # --------------------------------------------------------
 
-    if args.char_aspect <= 0:
-        parser.error("Character aspect ratio must be positive.")
+    if args.width <= 0:
+        parser.error("--width must be greater than zero.")
 
-    image = load_image(args.input)
+    if args.font_size <= 0:
+        parser.error("--font-size must be greater than zero.")
 
-    rows = convert_to_ascii(
+    if args.animation_speed <= 0:
+        parser.error("--animation-speed must be greater than zero.")
+
+    if args.reveal_duration <= 0:
+        parser.error("--reveal-duration must be greater than zero.")
+
+    if args.contrast < 0:
+        parser.error("--contrast cannot be negative.")
+
+    if args.brightness < 0:
+        parser.error("--brightness cannot be negative.")
+
+    # --------------------------------------------------------
+    # Process image
+    # --------------------------------------------------------
+
+    print("[INFO] Loading image...")
+
+    image = load_image(args.image)
+
+    print(
+        f"[INFO] Original image size: "
+        f"{image.width} x {image.height}"
+    )
+
+    print("[INFO] Resizing image...")
+
+    image = resize_image(
         image,
-        width=args.width,
-        char_aspect=args.char_aspect,
+        args.width
+    )
+
+    print("[INFO] Adjusting image...")
+
+    image = adjust_image(
+        image,
         contrast=args.contrast,
         brightness=args.brightness
     )
 
+    print("[INFO] Converting image to ASCII...")
+
+    rows = convert_to_ascii(image)
+
+    print("[INFO] Generating animated SVG...")
+
     generate_svg(
-        rows,
-        args.output,
+        rows=rows,
+        output_path=args.output,
         font_size=args.font_size,
         foreground=args.foreground,
-        background=args.background
+        background=args.background,
+        animation_speed=args.animation_speed,
+        reveal_duration=args.reveal_duration
     )
 
 
