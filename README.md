@@ -5,7 +5,7 @@
     src="assets/portrait_animated.gif"
     alt="Animated ASCII Portrait"
     width="100%"
-    style="max-width: 1000px; height: 750px;"
+    style="max-width: 1000px; max-height: 500px;"
   />
 </div>
 
