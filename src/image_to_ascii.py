@@ -496,11 +496,13 @@ def generate_svg(
         '<circle cx="56" cy="20" r="5" fill="#27c93f"/>'
     )
 
-    header_text = "portrait@github: ~$ ./portrait.sh"
+    header_text = "ursleeplessprogrammer@github: ~$ ./portrait.svg"
 
     svg.append(
-        f'<text x="{padding_x + 55}" y="24" '
+        f'<text x="{padding_x + 75}" y="27" '
         f'class="terminal-header" '
+        f'font-size="39" '
+        f'font-weight="600" '
         f'fill="#8b949e">'
         f'{html.escape(header_text)}'
         f'</text>'
@@ -622,7 +624,7 @@ def generate_svg(
         + 24
     )
 
-    footer_text = "portrait@github:~$ portrait generated"
+    footer_text = "ursleeplessprogrammer@github:~$ portrait generated"
 
     footer_start = (
         total_animation_duration + 0.1
@@ -632,6 +634,8 @@ def generate_svg(
         f'<text x="{padding_x}" '
         f'y="{footer_y}" '
         f'class="terminal-footer" '
+        f'font-size="28" '
+        f'font-weight="600" '
         f'fill="#8b949e" '
         f'opacity="0">'
         f'{html.escape(footer_text)}'
@@ -646,10 +650,7 @@ def generate_svg(
     # Blinking footer cursor
     # --------------------------------------------------------
 
-    footer_cursor_x = (
-        padding_x
-        + len(footer_text) * 6.6
-    )
+    footer_cursor_x = padding_x + len(footer_text) * 9
 
     svg.append(
         f'<rect x="{footer_cursor_x}" '
@@ -845,14 +846,14 @@ def main():
         reveal_duration=args.reveal_duration
     )
 
-    generate_gif(
-    rows=rows,
-    output_path="assets/portrait_animated.gif",
-    font_size=args.font_size,
-    foreground=args.foreground,
-    background=args.background,
-    frame_duration=80
-)
+    # generate_gif(
+    # rows=rows,
+    # output_path="assets/portrait_animated.gif",
+    # font_size=args.font_size,
+    # foreground=args.foreground,
+    # background=args.background,
+    # frame_duration=80
+    # )
 
 
 if __name__ == "__main__":
