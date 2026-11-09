@@ -189,13 +189,29 @@ def generate_svg(
 
     header_height = 42
 
-    # Calculate actual ASCII content dimensions
+    # Calculate actual content dimensions
     content_width = columns * char_width
     content_height = line_count * line_height
 
-    # SVG canvas
+    # Header and footer use larger fonts than the ASCII portrait.
+    # Include their full text widths so neither gets clipped.
+    header_text = "ursleeplessprogrammer@github: ~$ ./portrait.sh"
+    footer_text = "ursleeplessprogrammer@github:~$ portrait generated"
+
+    header_char_width = HEADER_FONT_SIZE * CHAR_WIDTH_RATIO
+    footer_char_width = FOOTER_FONT_SIZE * CHAR_WIDTH_RATIO
+
+    header_right = (
+        padding_x + 80 + len(header_text) * header_char_width
+    )
+    footer_right = (
+        padding_x + len(footer_text) * footer_char_width + 8 + padding_x
+    )
+    ascii_right = content_width + padding_x * 2
+
+    # Use the widest element to determine the canvas width.
     svg_width = int(
-        content_width + padding_x * 2
+        max(ascii_right, header_right + padding_x, footer_right)
     )
 
     footer_y = (
@@ -240,7 +256,8 @@ def generate_svg(
         f'<svg xmlns="http://www.w3.org/2000/svg" '
         f'width="{svg_width}" '
         f'height="{svg_height}" '
-        f'viewBox="0 0 {svg_width} {svg_height}">'
+        f'viewBox="0 0 {svg_width} {svg_height}" '
+        f'preserveAspectRatio="xMidYMid meet">'
     )
 
     # --------------------------------------------------------
@@ -309,8 +326,6 @@ def generate_svg(
     svg.append(
         '<circle cx="66" cy="22" r="7" fill="#27c93f"/>'
     )
-
-    header_text = "ursleeplessprogrammer@github: ~$ ./portrait.sh"
 
     # Header text
     svg.append(
@@ -425,8 +440,6 @@ def generate_svg(
     # TERMINAL FOOTER
     # --------------------------------------------------------
 
-    footer_text = "ursleeplessprogrammer@github:~$ portrait generated"
-
     svg.append(
         f'<text x="{padding_x}" '
         f'y="{footer_y}" '
@@ -505,6 +518,7 @@ def generate_svg(
     print(f"[INFO] Header font size: {HEADER_FONT_SIZE}px")
     print(f"[INFO] Footer font size: {FOOTER_FONT_SIZE}px")
     print(f"[INFO] Aspect ratio: {svg_width / svg_height:.3f}")
+    print("[INFO] SVG scaling: preserveAspectRatio=xMidYMid meet")
 
 
 # ============================================================
