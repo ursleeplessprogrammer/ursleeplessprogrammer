@@ -10,6 +10,7 @@
 
   <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=500&size=20&duration=3000&pause=1000&color=58A6FF&center=true&vCenter=true&width=550&lines=IT+Professional+%7C+Software+Developer;AI+%26+Machine+Learning+Enthusiast;Always+Learning%2C+Rarely+Sleeping." alt="Typing SVG" />
 
+
   *They may recreate the shape of what I make, but the soul that gave it form remains my own.*
 
 </div>
