@@ -207,16 +207,6 @@
   
       <rect
         x="58"
-        y="166"
-        width="12"
-        height="12"
-        rx="2.5"
-        fill="#e6e8eb">
-        <title>0 contributions on 2025-11-13</title>
-      </rect>
-    
-      <rect
-        x="58"
         y="183"
         width="12"
         height="12"
@@ -3865,6 +3855,16 @@
         <title>1 contributions on 2026-11-13</title>
       </rect>
     
+      <rect
+        x="942"
+        y="200"
+        width="12"
+        height="12"
+        rx="2.5"
+        fill="#e6e8eb">
+        <title>0 contributions on 2026-11-14</title>
+      </rect>
+    
   
   <rect
     x="58"
@@ -3914,7 +3914,7 @@
       fill="#a1a1aa"
       font-size="10"
       font-weight="400">
-      Nov 13, 2025 → Nov 13, 2026
+      Nov 14, 2025 → Nov 14, 2026
     </text>
   
 
